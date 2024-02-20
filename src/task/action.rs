@@ -27,3 +27,9 @@ pub enum Argument {
     Index(usize),
     Const(usize),
 }
+
+impl Atom {
+    pub fn map_args(&self, args: &Vec<usize>) -> Vec<usize> {
+        todo!()
+    }
+}
