@@ -62,10 +62,14 @@ mod blocksworld {
         assert!(task.init.has_unary(0, &0));
         assert!(task.init.has_unary(1, &0));
         assert!(task.init.has_nullary(2));
+        assert!(!task.init.covers(&task.goal));
         let state = task.init.apply(&task.actions[0], &vec![0]);
         assert!(state.has_unary(3, &0));
         assert!(!state.has_unary(0, &0));
         assert!(!state.has_unary(1, &0));
         assert!(!state.has_nullary(2));
+        assert!(!state.covers(&task.goal));
+        let state = state.apply(&task.actions[2], &vec![0, 1]);
+        assert!(state.covers(&task.goal));
     }
 }
