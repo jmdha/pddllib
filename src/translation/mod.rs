@@ -7,13 +7,23 @@ mod types;
 
 use crate::task::Task;
 use pddlp::{domain::Domain, problem::Problem};
-use std::{fs, io, path::PathBuf};
+use std::{fmt::Display, fs, io, path::PathBuf};
 
 #[derive(Debug)]
 pub enum Error {
     IoError(io::Error),
     ParsingError(pddlp::Error),
     MissingField(&'static str),
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Error::IoError(error) => write!(f, "{}", error),
+            Error::ParsingError(error) => write!(f, "{:?}", error),
+            Error::MissingField(error) => write!(f, "{}", error),
+        }
+    }
 }
 
 impl From<io::Error> for Error {
