@@ -1,0 +1,12 @@
+[package]
+name = "pddllib"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+indexmap = "2.2.3"
+pddlp = { version = "0.1.0", optional = true }
+
+[features]
+default = ["translation"]
+translation = ["dep:pddlp"]
