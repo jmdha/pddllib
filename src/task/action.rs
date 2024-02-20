@@ -30,6 +30,12 @@ pub enum Argument {
 
 impl Atom {
     pub fn map_args(&self, args: &Vec<usize>) -> Vec<usize> {
-        todo!()
+        self.args
+            .iter()
+            .map(|a| match a {
+                Argument::Index(i) => args[*i],
+                Argument::Const(i) => *i,
+            })
+            .collect()
     }
 }

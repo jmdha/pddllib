@@ -1,4 +1,5 @@
 mod actions;
+mod init;
 mod objects;
 mod parameters;
 mod predicates;
@@ -70,6 +71,10 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     };
     let actions =
         actions::translate(&types, &predicates, &objects, &domain.actions);
+    let init = match &problem.init {
+        Some(init) => init::translate(&predicates, &objects, &init),
+        None => init::translate(&predicates, &objects, &vec![]),
+    };
     Ok(Task {
         domain_name,
         problem_name,
@@ -77,5 +82,6 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         predicates,
         actions,
         objects,
+        init,
     })
 }

@@ -7,6 +7,7 @@ pub mod r#type;
 use self::{
     action::Action, object::Object, predicate::Predicate, r#type::Type,
 };
+use crate::state::State;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Task {
@@ -16,6 +17,7 @@ pub struct Task {
     pub predicates: Vec<Predicate>,
     pub actions: Vec<Action>,
     pub objects: Vec<Object>,
+    pub init: State,
 }
 
 impl Task {

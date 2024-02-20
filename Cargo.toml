@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 indexmap = "2.2.3"
 itertools = "0.12.1"
-pddlp = { version = "0.1.0", optional = true }
+pddlp = { version = "0.1.2", optional = true }
 
 [features]
 default = ["translation"]

@@ -7,6 +7,7 @@ use crate::{
 };
 use itertools::Itertools;
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Operator<'a> {
     pub action: &'a Action,
     pub args: Vec<usize>,
@@ -22,7 +23,7 @@ pub fn instantiate_action<'a>(
         .precondition
         .iter()
         .filter(|a| a.args.is_empty())
-        .any(|a| state.has_nullary(&a.predicate) != a.value)
+        .any(|a| state.has_nullary(a.predicate) != a.value)
     {
         return vec![];
     }
@@ -42,8 +43,9 @@ pub fn instantiate_action<'a>(
                 let arg = &a.args[0];
                 match arg {
                     Argument::Index(i) => {
-                        candidates[*i]
-                            .retain(|o| state.has_unary(&a.predicate, o));
+                        candidates[*i].retain(|o| {
+                            state.has_unary(a.predicate, o) == a.value
+                        });
                     }
                     Argument::Const(_) => todo!(),
                 }
@@ -63,7 +65,7 @@ pub fn instantiate_action<'a>(
                 .all(|a| {
                     let args = a.map_args(args);
                     return match a.kind {
-                        AtomKind::Fact => state.has_nary(&a.predicate, &args),
+                        AtomKind::Fact => state.has_nary(a.predicate, &args),
                         AtomKind::Equal => args.iter().all_equal(),
                     } == a.value;
                 })
@@ -83,8 +85,7 @@ pub fn instantiate_actions<'a>(
 }
 
 pub fn successors(task: &Task, state: &State) -> Vec<State> {
-    let operators = instantiate_actions(task, state);
-    operators
+    instantiate_actions(task, state)
         .iter()
         .map(|o| state.apply(o.action, &o.args))
         .collect()
