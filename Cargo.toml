@@ -2,6 +2,10 @@
 name = "pddllib"
 version = "0.1.0"
 edition = "2021"
+authors = ["Jan M. D. Hansen"]
+license-file = "LICENSE"
+repository = "https://github.com/jamadaha/pddllib"
+description = "A PDDL library for lifted successor generation"
 
 [dependencies]
 indexmap = "2.2.3"
