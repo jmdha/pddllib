@@ -1,7 +1,8 @@
 use std::collections::BTreeSet;
 
-use crate::task::action::Action;
+use crate::task::{action::Action, Goal};
 
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Fact {
     pub predicate: usize,
     pub args: Vec<usize>,
@@ -47,5 +48,9 @@ impl State {
             }
         }
         state
+    }
+    pub fn covers(&self, goal: &Goal) -> bool {
+        goal.iter()
+            .all(|(f, v)| self.has_nary(f.predicate, &f.args) == *v)
     }
 }

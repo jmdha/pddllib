@@ -7,8 +7,9 @@ pub mod r#type;
 use self::{
     action::Action, object::Object, predicate::Predicate, r#type::Type,
 };
-use crate::state::State;
+use crate::state::{Fact, State};
 
+pub type Goal = Vec<(Fact, bool)>;
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Task {
     pub domain_name: Option<String>,
@@ -18,6 +19,7 @@ pub struct Task {
     pub actions: Vec<Action>,
     pub objects: Vec<Object>,
     pub init: State,
+    pub goal: Goal,
 }
 
 impl Task {

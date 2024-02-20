@@ -1,4 +1,5 @@
 mod actions;
+mod goal;
 mod init;
 mod objects;
 mod parameters;
@@ -85,6 +86,10 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         Some(init) => init::translate(&predicates, &objects, &init),
         None => init::translate(&predicates, &objects, &vec![]),
     };
+    let goal = match &problem.goal {
+        Some(goal) => goal::translate(&predicates, &objects, goal),
+        None => return Err(Error::MissingField("No goal defined in problem")),
+    };
     Ok(Task {
         domain_name,
         problem_name,
@@ -93,5 +98,6 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         actions,
         objects,
         init,
+        goal,
     })
 }
