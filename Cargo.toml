@@ -13,6 +13,14 @@ indexmap = "2.2.3"
 itertools = "0.12.1"
 pddlp = { version = "0.1.2", optional = true }
 
+[dev-dependencies]
+pathfinding = "4.9.1"
+criterion = "0.5.1"
+
 [features]
 default = ["translation"]
 translation = ["dep:pddlp"]
+
+[[bench]]
+name = "bench_main"
+harness = false
