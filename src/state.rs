@@ -24,13 +24,15 @@ impl State {
             facts: internal_facts,
         }
     }
-
+    #[inline(always)]
     pub fn has_nullary(&self, predicate: usize) -> bool {
         self.facts[predicate].contains(&vec![])
     }
+    #[inline(always)]
     pub fn has_unary(&self, predicate: usize, arg: &usize) -> bool {
         self.facts[predicate].contains(&vec![*arg])
     }
+    #[inline(always)]
     pub fn has_nary(&self, predicate: usize, args: &Vec<usize>) -> bool {
         self.facts[predicate].contains(args)
     }
