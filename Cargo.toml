@@ -3,7 +3,6 @@ name = "pddllib"
 version = "0.1.2"
 edition = "2021"
 authors = ["Jan M. D. Hansen"]
-license = "GPL-3.0-only"
 license-file = "LICENSE"
 repository = "https://github.com/jamadaha/pddllib"
 description = "A PDDL library for lifted successor generation"
@@ -11,7 +10,7 @@ description = "A PDDL library for lifted successor generation"
 [dependencies]
 indexmap = "2.2.3"
 itertools = "0.12.1"
-pddlp = { version = "0.1.2", optional = true }
+pddlp = { version = "0.1.4", optional = true }
 
 [dev-dependencies]
 pathfinding = "4.9.1"

@@ -6,7 +6,7 @@ mod parameters;
 mod predicates;
 mod types;
 
-use crate::task::Task;
+use crate::task::{action::Action, Task};
 use pddlp::{domain::Domain, problem::Problem};
 use std::{fmt::Display, fs, io, path::PathBuf};
 
@@ -100,4 +100,14 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         init,
         goal,
     })
+}
+
+pub fn translate_action(task: &Task, input: &str) -> Result<Action> {
+    let action = pddlp::domain::action::parse(input)?;
+    Ok(actions::translate_action(
+        &task.types,
+        &task.predicates,
+        &task.objects,
+        &action,
+    ))
 }
