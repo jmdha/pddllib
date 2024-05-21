@@ -90,3 +90,10 @@ pub fn successors(task: &Task, state: &State) -> Vec<State> {
         .map(|o| state.apply(o.action, &o.args))
         .collect()
 }
+
+pub fn successors_relaxed(task: &Task, state: &State) -> Vec<State> {
+    instantiate_actions(task, state)
+        .iter()
+        .map(|o| state.apply_relaxed(o.action, &o.args))
+        .collect()
+}
