@@ -1,6 +1,6 @@
 [package]
 name = "pddllib"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = ["Jan M. D. Hansen"]
 license-file = "LICENSE"
@@ -11,6 +11,7 @@ description = "A PDDL library for lifted successor generation"
 indexmap = "2.2.3"
 itertools = "0.12.1"
 pddlp = { version = "0.1.4", optional = true }
+thiserror = "1.0.61"
 
 [dev-dependencies]
 pathfinding = "4.9.1"

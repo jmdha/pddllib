@@ -51,16 +51,6 @@ impl State {
         }
         state
     }
-    pub fn apply_relaxed(&self, action: &Action, args: &Vec<usize>) -> Self {
-        let mut state = self.clone();
-        for atom in action.effect.iter() {
-            let args = atom.map_args(args);
-            if atom.value {
-                state.facts[atom.predicate].insert(args.to_owned());
-            }
-        }
-        state
-    }
     pub fn covers(&self, goal: &Goal) -> bool {
         goal.iter()
             .all(|(f, v)| self.has_nary(f.predicate, &f.args) == *v)

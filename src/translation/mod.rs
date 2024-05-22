@@ -10,7 +10,7 @@ use crate::task::{action::Action, Task};
 use pddlp::{domain::Domain, problem::Problem};
 use std::{fmt::Display, fs, io, path::PathBuf};
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
     IoError(io::Error),
     ParsingError(pddlp::Error),
