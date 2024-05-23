@@ -23,7 +23,7 @@ pub fn instantiate_action<'a>(
         .precondition
         .iter()
         .filter(|a| a.args.is_empty())
-        .any(|a| state.has_nullary(a.predicate) != a.value)
+        .any(|a| state.has_nullary(task, a.predicate) != a.value)
     {
         return vec![];
     }
@@ -44,7 +44,7 @@ pub fn instantiate_action<'a>(
                 match arg {
                     Argument::Index(i) => {
                         candidates[*i].retain(|o| {
-                            state.has_unary(a.predicate, o) == a.value
+                            state.has_unary(task, a.predicate, o) == a.value
                         });
                     }
                     Argument::Const(_) => todo!(),
@@ -65,7 +65,9 @@ pub fn instantiate_action<'a>(
                 .all(|a| {
                     let args = a.map_args(args);
                     return match a.kind {
-                        AtomKind::Fact => state.has_nary(a.predicate, &args),
+                        AtomKind::Fact => {
+                            state.has_nary(task, a.predicate, &args)
+                        }
                         AtomKind::Equal => args.iter().all_equal(),
                     } == a.value;
                 })

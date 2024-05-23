@@ -59,17 +59,17 @@ mod blocksworld {
     #[test]
     fn instantiate() {
         let task = translate(DOMAIN, PROBLEM).unwrap();
-        assert!(task.init.has_unary(0, &0));
-        assert!(task.init.has_unary(1, &0));
-        assert!(task.init.has_nullary(2));
-        assert!(!task.init.covers(&task.goal));
+        assert!(task.init.has_unary(&task, 0, &0));
+        assert!(task.init.has_unary(&task, 1, &0));
+        assert!(task.init.has_nullary(&task, 2));
+        assert!(!task.init.covers(&task, &task.goal));
         let state = task.init.apply(&task.actions[0], &vec![0]);
-        assert!(state.has_unary(3, &0));
-        assert!(!state.has_unary(0, &0));
-        assert!(!state.has_unary(1, &0));
-        assert!(!state.has_nullary(2));
-        assert!(!state.covers(&task.goal));
+        assert!(state.has_unary(&task, 3, &0));
+        assert!(!state.has_unary(&task, 0, &0));
+        assert!(!state.has_unary(&task, 1, &0));
+        assert!(!state.has_nullary(&task, 2));
+        assert!(!state.covers(&task, &task.goal));
         let state = state.apply(&task.actions[2], &vec![0, 1]);
-        assert!(state.covers(&task.goal));
+        assert!(state.covers(&task, &task.goal));
     }
 }

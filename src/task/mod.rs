@@ -11,10 +11,11 @@ use crate::{
     state::{Fact, State},
     successor_generation::{instantiate_actions, Operator},
 };
+use std::collections::HashSet;
 
 pub type Plan<'a> = Vec<Operator<'a>>;
 pub type Goal = Vec<(Fact, bool)>;
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Task {
     pub domain_name: Option<String>,
     pub problem_name: Option<String>,
@@ -24,6 +25,8 @@ pub struct Task {
     pub objects: Vec<Object>,
     pub init: State,
     pub goal: Goal,
+    pub static_predicates: HashSet<usize>,
+    pub static_facts: HashSet<Fact>,
 }
 
 impl Task {

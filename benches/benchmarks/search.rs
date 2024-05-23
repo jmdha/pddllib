@@ -6,7 +6,7 @@ fn solve(task: &Task) -> Option<Vec<State>> {
     bfs(
         &task.init,
         |state| successors(&task, state),
-        |state| state.covers(&task.goal),
+        |state| state.covers(task, &task.goal),
     )
 }
 

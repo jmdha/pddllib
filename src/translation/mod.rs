@@ -1,14 +1,17 @@
 mod actions;
 mod goal;
-mod init;
 mod objects;
 mod parameters;
 mod predicates;
 mod types;
 
-use crate::task::{action::Action, Task};
+use crate::{
+    state::{Fact, State},
+    task::{action::Action, Task},
+};
+use itertools::{Either, Itertools};
 use pddlp::{domain::Domain, problem::Problem};
-use std::{fmt::Display, fs, io, path::PathBuf};
+use std::{collections::HashSet, fmt::Display, fs, io, path::PathBuf};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -82,10 +85,36 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     };
     let actions =
         actions::translate(&types, &predicates, &objects, &domain.actions);
-    let init = match &problem.init {
-        Some(init) => init::translate(&predicates, &objects, &init),
-        None => init::translate(&predicates, &objects, &vec![]),
-    };
+    let static_predicates: HashSet<_> = (0..predicates.len())
+        .filter(|i| {
+            !actions
+                .iter()
+                .any(|a| a.effect.iter().any(|a| a.predicate == *i))
+        })
+        .collect();
+    let (static_facts, mutable_facts): (HashSet<_>, Vec<_>) =
+        match &problem.init {
+            Some(init) => init.clone().into_iter().partition_map(|fact| {
+                let fact = Fact::new(
+                    predicates
+                        .iter()
+                        .position(|p| p.name == fact.predicate)
+                        .unwrap(),
+                    fact.objects
+                        .iter()
+                        .map(|o| {
+                            objects.iter().position(|o2| o == &o2.name).unwrap()
+                        })
+                        .collect(),
+                );
+                match static_predicates.contains(&fact.predicate()) {
+                    true => Either::Left(fact),
+                    false => Either::Right(fact),
+                }
+            }),
+            None => (HashSet::default(), vec![]),
+        };
+    let init = State::new(mutable_facts);
     let goal = match &problem.goal {
         Some(goal) => goal::translate(&predicates, &objects, goal),
         None => return Err(Error::MissingField("No goal defined in problem")),
@@ -99,6 +128,8 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         objects,
         init,
         goal,
+        static_facts,
+        static_predicates,
     })
 }
 
