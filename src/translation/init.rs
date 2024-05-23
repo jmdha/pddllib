@@ -10,16 +10,19 @@ pub fn translate(
 ) -> State {
     let facts = init
         .iter()
-        .map(|f| Fact {
-            predicate: predicates
-                .iter()
-                .position(|p| p.name == f.predicate)
-                .unwrap(),
-            args: f
-                .objects
-                .iter()
-                .map(|o| objects.iter().position(|o2| o == &o2.name).unwrap())
-                .collect(),
+        .map(|f| {
+            Fact::new(
+                predicates
+                    .iter()
+                    .position(|p| p.name == f.predicate)
+                    .unwrap(),
+                f.objects
+                    .iter()
+                    .map(|o| {
+                        objects.iter().position(|o2| o == &o2.name).unwrap()
+                    })
+                    .collect(),
+            )
         })
         .collect();
 

@@ -14,19 +14,18 @@ pub fn translate(
     while let Some((e, value)) = queue.pop() {
         match e {
             pddlp::problem::Goal::Fact(g) => goal_facts.push((
-                Fact {
-                    predicate: predicates
+                Fact::new(
+                    predicates
                         .iter()
                         .position(|p| p.name == g.predicate)
                         .unwrap(),
-                    args: g
-                        .objects
+                    g.objects
                         .iter()
                         .map(|o| {
                             objects.iter().position(|o2| o == &o2.name).unwrap()
                         })
                         .collect(),
-                },
+                ),
                 value,
             )),
             pddlp::problem::Goal::And(g) => {

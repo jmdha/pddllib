@@ -4,8 +4,8 @@ use crate::task::{action::Action, Goal};
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Fact {
-    pub predicate: usize,
-    pub args: Vec<usize>,
+    predicate: usize,
+    args: Vec<usize>,
 }
 
 impl Fact {
