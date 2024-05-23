@@ -31,6 +31,10 @@ impl State {
         }
     }
     #[inline(always)]
+    pub fn fact_count(&self) -> usize {
+        self.facts.len()
+    }
+    #[inline(always)]
     pub fn has_nullary(&self, predicate: usize) -> bool {
         self.facts.contains(&Fact::new(predicate, vec![]))
     }
