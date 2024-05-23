@@ -1,16 +1,21 @@
-use std::collections::BTreeSet;
-
 use crate::task::{action::Action, Goal};
+use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Fact {
-    predicate: usize,
-    args: Vec<usize>,
+    internal: u64,
 }
 
 impl Fact {
-    pub fn new(predicate: usize, args: Vec<usize>) -> Fact {
-        Self { predicate, args }
+    pub fn new(predicate: usize, args: Vec<usize>) -> Self {
+        debug_assert!(args.len() <= 3);
+        let internal = predicate as u64
+            + args
+                .into_iter()
+                .enumerate()
+                .map(|(i, p)| (p as u64) << 16 * (i + 1))
+                .sum::<u64>();
+        Self { internal }
     }
 }
 
