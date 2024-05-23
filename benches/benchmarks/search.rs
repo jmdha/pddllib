@@ -85,226 +85,328 @@ mod blocksworld {
     }
 }
 
-mod rovers {
+mod miconic {
     use criterion::Criterion;
     use pddllib::translation::translate;
 
     use super::solve;
     const DOMAIN: &'static str = r#"
-;; source: https://github.com/AI-Planning/pddl-generators/blob/main/rovers/domain.pddl
-;; updates:
-;;   - since actions are performed sequentially and immediately
-;;     'channel_free' and 'available' predicates are removed
-;;   -
-
-(define (domain rover)
-(:requirements :strips :typing)
-(:types rover waypoint store camera mode lander objective)
-
-(:predicates
-    (at ?x - rover ?y - waypoint)
-    (at_lander ?x - lander ?y - waypoint)
-    (can_traverse ?r - rover ?x - waypoint ?y - waypoint)
-	(equipped_for_soil_analysis ?r - rover)
-    (equipped_for_rock_analysis ?r - rover)
-    (equipped_for_imaging ?r - rover)
-    (empty ?s - store)
-    (have_rock_analysis ?r - rover ?w - waypoint)
-    (have_soil_analysis ?r - rover ?w - waypoint)
-    (full ?s - store)
-	(calibrated ?c - camera ?r - rover)
-	(supports ?c - camera ?m - mode)
-    (visible ?w - waypoint ?p - waypoint)
-    (have_image ?r - rover ?o - objective ?m - mode)
-    (communicated_soil_data ?w - waypoint)
-    (communicated_rock_data ?w - waypoint)
-    (communicated_image_data ?o - objective ?m - mode)
-	(at_soil_sample ?w - waypoint)
-	(at_rock_sample ?w - waypoint)
-    (visible_from ?o - objective ?w - waypoint)
-	(store_of ?s - store ?r - rover)
-	(calibration_target ?i - camera ?o - objective)
-	(on_board ?i - camera ?r - rover)
-)
-
-(:action navigate
-:parameters (?x - rover ?y - waypoint ?z - waypoint)
-:precondition (and
-    (can_traverse ?x ?y ?z)
-    (at ?x ?y)
-    (visible ?y ?z))
-:effect (and
-    (not (at ?x ?y))
-    (at ?x ?z))
-)
-
-(:action sample_soil
-:parameters (?x - rover ?s - store ?p - waypoint)
-:precondition (and
-    (at ?x ?p)
-    (at_soil_sample ?p)
-	(equipped_for_soil_analysis ?x)
-	(store_of ?s ?x)
-	(empty ?s))
-:effect (and
-    (not (empty ?s))
-    (full ?s)
-    (have_soil_analysis ?x ?p)
-    (not (at_soil_sample ?p)))
-)
-
-(:action sample_rock
-:parameters (?x - rover ?s - store ?p - waypoint)
-:precondition (and
-    (at ?x ?p)
-    (at_rock_sample ?p)
-	(equipped_for_rock_analysis ?x)
-	(store_of ?s ?x)
-	(empty ?s))
-:effect (and
-    (not (empty ?s))
-    (full ?s)
-    (have_rock_analysis ?x ?p)
-	(not (at_rock_sample ?p)))
-)
-
-(:action drop
-:parameters (?x - rover ?y - store)
-:precondition (and
-    (store_of ?y ?x)
-    (full ?y))
-:effect (and
-    (not (full ?y))
-    (empty ?y))
-)
-
-(:action calibrate
- :parameters (?r - rover ?i - camera ?t - objective ?w - waypoint)
- :precondition (and
-    (equipped_for_imaging ?r)
-    (calibration_target ?i ?t)
-    (at ?r ?w)
-    (visible_from ?t ?w)
-    (on_board ?i ?r))
- :effect (and
-    (calibrated ?i ?r))
-)
-
-(:action take_image
- :parameters (?r - rover ?p - waypoint ?o - objective ?i - camera ?m - mode)
- :precondition (and
-    (calibrated ?i ?r)
-    (on_board ?i ?r)
-    (equipped_for_imaging ?r)
-    (supports ?i ?m)
-    (visible_from ?o ?p)
-    (at ?r ?p))
- :effect (and
-    (have_image ?r ?o ?m)
-    (not (calibrated ?i ?r)))
-)
-
-(:action communicate_soil_data
- :parameters (?r - rover ?l - lander ?p - waypoint ?x - waypoint ?y - waypoint)
- :precondition (and
-    (at ?r ?x)
-    (at_lander ?l ?y)
-    (have_soil_analysis ?r ?p)
-    (visible ?x ?y))
- :effect (and
-    (communicated_soil_data ?p))
-)
-
-(:action communicate_rock_data
- :parameters (?r - rover ?l - lander ?p - waypoint ?x - waypoint ?y - waypoint)
- :precondition (and
-    (at ?r ?x)
-    (at_lander ?l ?y)
-    (have_rock_analysis ?r ?p)
-    (visible ?x ?y))
- :effect (and
-    (communicated_rock_data ?p))
-)
-
-(:action communicate_image_data
- :parameters (?r - rover ?l - lander ?o - objective ?m - mode
-	      ?x - waypoint ?y - waypoint)
- :precondition (and
-    (at ?r ?x)
-    (at_lander ?l ?y)
-    (have_image ?r ?o ?m)
-    (visible ?x ?y))
- :effect (and
-    (communicated_image_data ?o ?m)))
+(define
+	(domain miconic)
+	(:requirements :strips)
+	(:types
+		passenger - object
+		floor - object
+	)
+	(:predicates
+		(origin ?person - passenger ?floor - floor)
+		(destin ?person - passenger ?floor - floor)
+		(above ?floor1 - floor ?floor2 - floor)
+		(boarded ?person - passenger)
+		(not-boarded ?person - passenger)
+		(served ?person - passenger)
+		(not-served ?person - passenger)
+		(lift-at ?floor - floor)
+	)
+	(:action board
+		:parameters (?f - floor ?p - passenger)
+		:precondition 
+			(and
+				(lift-at ?f)
+				(origin ?p ?f)
+			)
+		:effect 
+			(boarded ?p)
+	)
+	(:action depart
+		:parameters (?f - floor ?p - passenger)
+		:precondition 
+			(and
+				(lift-at ?f)
+				(destin ?p ?f)
+				(boarded ?p)
+			)
+		:effect 
+			(and
+				(not (boarded ?p))
+				(served ?p)
+			)
+	)
+	(:action up
+		:parameters (?f1 - floor ?f2 - floor)
+		:precondition 
+			(and
+				(lift-at ?f1)
+				(above ?f1 ?f2)
+			)
+		:effect 
+			(and
+				(lift-at ?f2)
+				(not (lift-at ?f1))
+			)
+	)
+	(:action down
+		:parameters (?f1 - floor ?f2 - floor)
+		:precondition 
+			(and
+				(lift-at ?f1)
+				(above ?f2 ?f1)
+			)
+		:effect 
+			(and
+				(lift-at ?f2)
+				(not (lift-at ?f1))
+			)
+	)
 )
 "#;
 
     const PROBLEM: &'static str = r#"
-;; rovers=1, waypoints=4, cameras=1, objectives=1, out_folder=testing/easy, instance_id=1, seed=1007
-
-(define (problem rover-01)
- (:domain rover)
- (:objects 
-    general - lander
-    colour high_res low_res - mode
-    rover1 - rover
-    rover1store - store
-    waypoint1 waypoint2 waypoint3 waypoint4 - waypoint
-    camera1 - camera
-    objective1 - objective)
- (:init 
-    (at_lander general waypoint1)
-    (at rover1 waypoint2)
-    (equipped_for_soil_analysis rover1)
-    (equipped_for_rock_analysis rover1)
-    (equipped_for_imaging rover1)
-    (empty rover1store)
-    (store_of rover1store rover1)
-    (at_rock_sample waypoint1)
-    (at_rock_sample waypoint2)
-    (at_rock_sample waypoint3)
-    (at_soil_sample waypoint2)
-    (at_soil_sample waypoint3)
-    (visible waypoint3 waypoint4)
-    (visible waypoint4 waypoint3)
-    (visible waypoint1 waypoint4)
-    (visible waypoint2 waypoint3)
-    (visible waypoint3 waypoint2)
-    (visible waypoint4 waypoint1)
-    (visible waypoint1 waypoint2)
-    (visible waypoint2 waypoint1)
-    (visible waypoint2 waypoint4)
-    (visible waypoint4 waypoint2)
-    (visible waypoint1 waypoint3)
-    (visible waypoint3 waypoint1)
-    (can_traverse rover1 waypoint3 waypoint4)
-    (can_traverse rover1 waypoint4 waypoint3)
-    (can_traverse rover1 waypoint1 waypoint4)
-    (can_traverse rover1 waypoint2 waypoint3)
-    (can_traverse rover1 waypoint3 waypoint2)
-    (can_traverse rover1 waypoint4 waypoint1)
-    (can_traverse rover1 waypoint2 waypoint4)
-    (can_traverse rover1 waypoint4 waypoint2)
-    (calibration_target camera1 objective1)
-    (on_board camera1 rover1)
-    (supports camera1 high_res)
-    (supports camera1 colour)
-    (supports camera1 low_res)
-    (visible_from objective1 waypoint1)
-    (visible_from objective1 waypoint3)
-    (visible_from objective1 waypoint2)
-    (visible_from objective1 waypoint4))
- (:goal  (and 
-    (communicated_rock_data waypoint3)
-    (communicated_rock_data waypoint2)
-    (communicated_soil_data waypoint2)
-    )))
+(define
+	(problem mixed-f5-p5-u0-v0-d0-a0-n0-a0-b0-n0-f0)
+	(:domain miconic)
+	(:objects
+		p0 - passenger
+		p1 - passenger
+		p2 - passenger
+		f0 - floor
+		f1 - floor
+		f2 - floor
+		f3 - floor
+		f4 - floor
+	)
+	(:init
+		(above f0 f1)
+		(above f0 f2)
+		(above f0 f3)
+		(above f0 f4)
+		(above f1 f2)
+		(above f1 f3)
+		(above f1 f4)
+		(above f2 f3)
+		(above f2 f4)
+		(above f3 f4)
+		(origin p0 f0)
+		(destin p0 f2)
+		(origin p1 f4)
+		(destin p1 f0)
+		(origin p2 f4)
+		(destin p2 f3)
+		(lift-at f0)
+	)
+	(:goal
+		(and
+			(served p0)
+			(served p1)
+			(served p2)
+		)
+	)
+)
 "#;
 
     pub fn bench(c: &mut Criterion) {
         let task = translate(DOMAIN, PROBLEM).unwrap();
-        c.bench_function("solve rovers", |b| b.iter(|| solve(&task)));
+        c.bench_function("solve miconic", |b| b.iter(|| solve(&task)));
     }
 }
 
-criterion_group!(benches, blocksworld::bench, rovers::bench);
+mod grid {
+    use criterion::Criterion;
+    use pddllib::translation::translate;
+
+    use super::solve;
+    const DOMAIN: &'static str = r#"
+(define
+	(domain grid)
+	(:requirements :strips)
+	(:predicates
+		(conn ?x ?y)
+		(key-shape ?k ?s)
+		(lock-shape ?x ?s)
+		(at ?r ?x)
+		(at-robot ?x)
+		(place ?p)
+		(key ?k)
+		(shape ?s)
+		(locked ?x)
+		(holding ?k)
+		(open ?x)
+		(arm-empty)
+	)
+	(:action unlock
+		:parameters (?curpos ?lockpos ?key ?shape)
+		:precondition 
+			(and
+				(place ?curpos)
+				(place ?lockpos)
+				(key ?key)
+				(shape ?shape)
+				(conn ?curpos ?lockpos)
+				(key-shape ?key ?shape)
+				(lock-shape ?lockpos ?shape)
+				(at-robot ?curpos)
+				(locked ?lockpos)
+				(holding ?key)
+			)
+		:effect 
+			(and
+				(open ?lockpos)
+				(not (locked ?lockpos))
+			)
+	)
+	(:action move
+		:parameters (?curpos ?nextpos)
+		:precondition 
+			(and
+				(place ?curpos)
+				(place ?nextpos)
+				(at-robot ?curpos)
+				(conn ?curpos ?nextpos)
+				(open ?nextpos)
+			)
+		:effect 
+			(and
+				(at-robot ?nextpos)
+				(not (at-robot ?curpos))
+			)
+	)
+	(:action pickup
+		:parameters (?curpos ?key)
+		:precondition 
+			(and
+				(place ?curpos)
+				(key ?key)
+				(at-robot ?curpos)
+				(at ?key ?curpos)
+				(arm-empty)
+			)
+		:effect 
+			(and
+				(holding ?key)
+				(not (at ?key ?curpos))
+				(not (arm-empty))
+			)
+	)
+	(:action pickup-and-loose
+		:parameters (?curpos ?newkey ?oldkey)
+		:precondition 
+			(and
+				(place ?curpos)
+				(key ?newkey)
+				(key ?oldkey)
+				(at-robot ?curpos)
+				(holding ?oldkey)
+				(at ?newkey ?curpos)
+			)
+		:effect 
+			(and
+				(holding ?newkey)
+				(at ?oldkey ?curpos)
+				(not (holding ?oldkey))
+				(not (at ?newkey ?curpos))
+			)
+	)
+	(:action putdown
+		:parameters (?curpos ?key)
+		:precondition 
+			(and
+				(place ?curpos)
+				(key ?key)
+				(at-robot ?curpos)
+				(holding ?key)
+			)
+		:effect 
+			(and
+				(arm-empty)
+				(at ?key ?curpos)
+				(not (holding ?key))
+			)
+	)
+
+)
+"#;
+
+    const PROBLEM: &'static str = r#"
+(define
+	(problem grid-3-3-1-2-1)
+	(:domain grid)
+	(:objects
+		pos0-0
+		pos0-1
+		pos0-2
+		pos1-0
+		pos1-1
+		pos1-2
+		pos2-0
+		pos2-1
+		pos2-2
+		shape0
+		key0
+		key1
+	)
+	(:init
+		(arm-empty)
+		(place pos0-0)
+		(place pos0-1)
+		(place pos0-2)
+		(place pos1-0)
+		(place pos1-1)
+		(place pos1-2)
+		(place pos2-0)
+		(place pos2-1)
+		(place pos2-2)
+		(shape shape0)
+		(key key0)
+		(key key1)
+		(conn pos0-0 pos1-0)
+		(conn pos0-0 pos0-1)
+		(conn pos0-1 pos1-1)
+		(conn pos0-1 pos0-2)
+		(conn pos0-1 pos0-0)
+		(conn pos0-2 pos1-2)
+		(conn pos0-2 pos0-1)
+		(conn pos1-0 pos2-0)
+		(conn pos1-0 pos1-1)
+		(conn pos1-0 pos0-0)
+		(conn pos1-1 pos2-1)
+		(conn pos1-1 pos1-2)
+		(conn pos1-1 pos0-1)
+		(conn pos1-1 pos1-0)
+		(conn pos1-2 pos2-2)
+		(conn pos1-2 pos0-2)
+		(conn pos1-2 pos1-1)
+		(conn pos2-0 pos2-1)
+		(conn pos2-0 pos1-0)
+		(conn pos2-1 pos2-2)
+		(conn pos2-1 pos1-1)
+		(conn pos2-1 pos2-0)
+		(conn pos2-2 pos1-2)
+		(conn pos2-2 pos2-1) (locked pos0-2)
+		(lock-shape pos0-2 shape0)
+		(open pos0-0)
+		(open pos0-1)
+		(open pos1-0)
+		(open pos1-1)
+		(open pos1-2)
+		(open pos2-0)
+		(open pos2-1)
+		(open pos2-2)
+		(key-shape key0 shape0)
+		(key-shape key1 shape0)
+		(at key0 pos2-1)
+		(at key1 pos2-0)
+		(at-robot pos0-1)
+	)
+	(:goal
+		(and (at key0 pos2-2))
+	)
+)
+"#;
+
+    pub fn bench(c: &mut Criterion) {
+        let task = translate(DOMAIN, PROBLEM).unwrap();
+        c.bench_function("solve grid", |b| b.iter(|| solve(&task)));
+    }
+}
+
+criterion_group!(benches, blocksworld::bench, miconic::bench, grid::bench);
