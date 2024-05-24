@@ -99,11 +99,19 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
                     predicates
                         .iter()
                         .position(|p| p.name == fact.predicate)
-                        .unwrap(),
+                        .expect(&format!(
+                            "In initial state, could not find predicate {}",
+                            fact.predicate,
+                        )),
                     fact.objects
                         .iter()
                         .map(|o| {
-                            objects.iter().position(|o2| o == &o2.name).unwrap()
+                            objects.iter().position(|o2| o == &o2.name).expect(
+                                &format!(
+                                "In initial state, could not find object {}",
+                                o
+                            ),
+                            )
                         })
                         .collect(),
                 );
