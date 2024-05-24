@@ -100,16 +100,16 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
                         .iter()
                         .position(|p| p.name == fact.predicate)
                         .expect(&format!(
-                            "In initial state, could not find predicate {}",
-                            fact.predicate,
+                            "In initial state, could not find predicate {}. Predicates: {:?}",
+                            fact.predicate, predicates
                         )),
                     fact.objects
                         .iter()
                         .map(|o| {
                             objects.iter().position(|o2| o == &o2.name).expect(
                                 &format!(
-                                "In initial state, could not find object {}",
-                                o
+                                "In initial state, could not find object {}. Objects: {:?}",
+                                o, objects
                             ),
                             )
                         })
