@@ -98,7 +98,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
                 let fact = Fact::new(
                     predicates
                         .iter()
-                        .position(|p| p.name == fact.predicate)
+                        .position(|p| p.name.to_lowercase() == fact.predicate)
                         .expect(&format!(
                             "In initial state, could not find predicate {}. Predicates: {:?}",
                             fact.predicate, predicates
@@ -106,7 +106,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
                     fact.objects
                         .iter()
                         .map(|o| {
-                            objects.iter().position(|o2| o == &o2.name).expect(
+                            objects.iter().position(|o2| o.to_lowercase() == o2.name).expect(
                                 &format!(
                                 "In initial state, could not find object {}. Objects: {:?}",
                                 o, objects
