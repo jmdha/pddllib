@@ -8,7 +8,7 @@ pub fn translate(
     predicates
         .iter()
         .map(|p| Predicate {
-            name: p.name.to_lowercase(),
+            name: p.name.to_owned(),
             parameters: parameters::translate(types, &p.parameters),
         })
         .collect()

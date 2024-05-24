@@ -9,13 +9,14 @@ fn translate_untyped() -> Vec<Type> {
 }
 
 fn translate_typed(types: &Vec<pddlp::domain::Type>) -> Vec<Type> {
-    let type_names: IndexSet<String> = types.iter().map(|t| t.name.to_lowercase()).collect();
+    let type_names: IndexSet<String> =
+        types.iter().map(|t| t.name.to_owned()).collect();
     types
         .iter()
         .map(|t| Type {
-            name: t.name.to_lowercase(),
+            name: t.name.to_owned(),
             parent: match t.parent {
-                Some(parent) => type_names.get_index_of(&parent.to_lowercase()),
+                Some(parent) => type_names.get_index_of(&parent.to_owned()),
                 None => None,
             },
         })

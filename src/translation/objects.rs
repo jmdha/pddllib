@@ -26,7 +26,7 @@ pub fn translate(
     objects
         .iter()
         .map(|o| Object {
-            name: o.name.to_lowercase(),
+            name: o.name.to_owned(),
             types: find_types(types, &o.type_name),
         })
         .collect()

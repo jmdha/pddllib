@@ -7,7 +7,7 @@ pub fn translate(
     parameters
         .iter()
         .map(|p| Parameter {
-            name: p.name.to_lowercase(),
+            name: p.name.to_owned(),
             type_index: match p.r#type {
                 Some(name) => {
                     types.iter().position(|t| t.name == name).unwrap()

@@ -28,7 +28,7 @@ pub fn translate_action(
     objects: &Vec<Object>,
     action: &pddlp::domain::Action,
 ) -> Action {
-    let name = action.name.to_lowercase();
+    let name = action.name.to_owned();
     let parameters = match &action.parameters {
         Some(parameters) => parameters::translate(types, &parameters),
         None => vec![],
