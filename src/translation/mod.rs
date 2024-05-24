@@ -11,7 +11,7 @@ use crate::{
 };
 use itertools::{Either, Itertools};
 use pddlp::{domain::Domain, problem::Problem};
-use std::{collections::HashSet, fmt::Display, fs, io, path::PathBuf};
+use std::{collections::BTreeSet, fmt::Display, fs, io, path::PathBuf};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -85,14 +85,14 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     };
     let actions =
         actions::translate(&types, &predicates, &objects, &domain.actions);
-    let static_predicates: HashSet<_> = (0..predicates.len())
+    let static_predicates: BTreeSet<_> = (0..predicates.len())
         .filter(|i| {
             !actions
                 .iter()
                 .any(|a| a.effect.iter().any(|a| a.predicate == *i))
         })
         .collect();
-    let (static_facts, mutable_facts): (HashSet<_>, Vec<_>) =
+    let (static_facts, mutable_facts): (BTreeSet<_>, Vec<_>) =
         match &problem.init {
             Some(init) => init.clone().into_iter().partition_map(|fact| {
                 let fact = Fact::new(
@@ -120,7 +120,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
                     false => Either::Right(fact),
                 }
             }),
-            None => (HashSet::default(), vec![]),
+            None => (BTreeSet::default(), vec![]),
         };
     let init = State::new(mutable_facts);
     let goal = match &problem.goal {

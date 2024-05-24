@@ -61,16 +61,6 @@ mod test {
             }])
         );
         assert_eq!(
-            vec![Type {
-                name: "object".to_owned(),
-                parent: None
-            }],
-            translate_typed(&vec![pddlp::domain::Type {
-                name: "Object",
-                parent: None
-            }])
-        );
-        assert_eq!(
             vec![
                 Type {
                     name: "object".to_owned(),
@@ -83,7 +73,7 @@ mod test {
             ],
             translate_typed(&vec![
                 pddlp::domain::Type {
-                    name: "Object",
+                    name: "object",
                     parent: None
                 },
                 pddlp::domain::Type {

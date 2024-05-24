@@ -11,7 +11,7 @@ use crate::{
     state::{Fact, State},
     successor_generation::{instantiate_actions, Operator},
 };
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
 pub type Plan<'a> = Vec<Operator<'a>>;
 pub type Goal = Vec<(Fact, bool)>;
@@ -25,8 +25,8 @@ pub struct Task {
     pub objects: Vec<Object>,
     pub init: State,
     pub goal: Goal,
-    pub static_predicates: HashSet<usize>,
-    pub static_facts: HashSet<Fact>,
+    pub static_predicates: BTreeSet<usize>,
+    pub static_facts: BTreeSet<Fact>,
 }
 
 impl Task {
