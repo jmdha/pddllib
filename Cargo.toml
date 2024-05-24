@@ -1,6 +1,6 @@
 [package]
 name = "pddllib"
-version = "0.1.13"
+version = "0.1.14"
 edition = "2021"
 authors = ["Jan M. D. Hansen"]
 license-file = "LICENSE"
@@ -8,9 +8,9 @@ repository = "https://github.com/jamadaha/pddllib"
 description = "A PDDL library for lifted successor generation"
 
 [dependencies]
-indexmap = "2.2.3"
-itertools = "0.12.1"
-pddlp = { version = "0.1.4", optional = true }
+indexmap = "2.2.6"
+itertools = "0.13.0"
+pddlp = { version = "0.1.6", optional = true }
 thiserror = "1.0.61"
 
 [dev-dependencies]
