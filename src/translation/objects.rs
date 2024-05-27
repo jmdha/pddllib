@@ -11,8 +11,8 @@ fn find_types(types: &Vec<Type>, type_name: &Option<&str>) -> Vec<usize> {
     let mut object_types = vec![];
 
     let index = types.iter().position(|p| &p.name == type_name).unwrap();
-    object_types.push(index.clone());
-    while let Some(index) = types[index].parent {
+    object_types.push(index);
+    while let Some(index) = types[*object_types.last().unwrap()].parent {
         object_types.push(index);
     }
 
