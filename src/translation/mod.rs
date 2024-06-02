@@ -9,7 +9,7 @@ use crate::{
     state::{Fact, State},
     task::{action::Action, Task},
 };
-use itertools::{Either, Itertools};
+use itertools::Itertools;
 use pddlp::{domain::Domain, problem::Problem};
 use std::{collections::BTreeSet, fmt::Display, fs, io, path::PathBuf};
 
@@ -92,36 +92,32 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
                 .any(|a| a.effect.iter().any(|a| a.predicate == *i))
         })
         .collect();
-    let (static_facts, mutable_facts): (BTreeSet<_>, Vec<_>) =
-        match &problem.init {
-            Some(init) => init.clone().into_iter().partition_map(|fact| {
-                let fact = Fact::new(
-                    predicates
-                        .iter()
-                        .position(|p| p.name == fact.predicate)
-                        .expect(&format!(
-                            "In initial state, could not find predicate {}. Predicates: {:?}",
-                            fact.predicate, predicates
-                        )),
-                    fact.objects
-                        .iter()
-                        .map(|o| {
-                            objects.iter().position(|o2| o == &o2.name).expect(
-                                &format!(
-                                "In initial state, could not find object {}. Objects: {:?}",
-                                o, objects
-                            ),
-                            )
-                        })
-                        .collect(),
-                );
-                match static_predicates.contains(&fact.predicate()) {
-                    true => Either::Left(fact),
-                    false => Either::Right(fact),
-                }
-            }),
-            None => (BTreeSet::default(), vec![]),
-        };
+    let facts = problem
+        .init
+        .as_ref()
+        .expect("Problem missing init")
+        .iter()
+        .map(|fact| {
+            Fact::new(
+                predicates
+                    .iter()
+                    .position(|predicate| predicate.name == fact.predicate)
+                    .expect(""),
+                fact.objects
+                    .iter()
+                    .map(|o| {
+                        objects
+                            .iter()
+                            .position(|object| *o == object.name)
+                            .expect("")
+                    })
+                    .collect(),
+            )
+        })
+        .collect_vec();
+    let (static_facts, mutable_facts) = facts
+        .into_iter()
+        .partition(|fact| static_predicates.contains(&fact.predicate()));
     let init = State::new(mutable_facts);
     let goal = match &problem.goal {
         Some(goal) => goal::translate(&predicates, &objects, goal),
@@ -144,7 +140,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         objects_typed,
         init,
         goal,
-        static_facts,
+        static_facts: static_facts.into_iter().collect(),
         static_predicates,
     })
 }
