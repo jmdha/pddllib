@@ -3,6 +3,8 @@ use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Fact {
+    // NOTE: args are stored internally as 1 indexed (i.e. 1 is added to all args)
+    // As to handle args of value 0, which would otherwise register as no arg
     internal: u64,
 }
 
@@ -13,7 +15,7 @@ impl Fact {
             + args
                 .into_iter()
                 .enumerate()
-                .map(|(i, p)| (p as u64) << 16 * (i + 1))
+                .map(|(i, p)| ((p + 1) as u64) << 16 * (i + 1))
                 .sum::<u64>();
         Self { internal }
     }
@@ -26,7 +28,7 @@ impl Fact {
         let mut index = self.internal;
         index = index >> 16;
         while index != 0 {
-            parameters.push((index as u16) as usize);
+            parameters.push(((index - 1) as u16) as usize);
             index = index >> 16;
         }
         parameters
@@ -92,5 +94,22 @@ impl State {
     }
     pub fn covers(&self, task: &Task, goal: &Goal) -> bool {
         goal.iter().all(|(f, v)| self.has_fact(task, f) == *v)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn fact() {
+        assert_eq!(0, Fact::new(0, vec![]).predicate());
+        assert_eq!(1, Fact::new(1, vec![]).predicate());
+        assert_eq!(2, Fact::new(2, vec![1]).predicate());
+        assert_eq!(3, Fact::new(3, vec![1, 2]).predicate());
+        assert_eq!(4, Fact::new(4, vec![1, 2, 3]).predicate());
+        assert_eq!(vec![0], Fact::new(2, vec![0]).args());
+        assert_eq!(vec![1], Fact::new(2, vec![1]).args());
+        assert_eq!(vec![1, 2], Fact::new(3, vec![1, 2]).args());
+        assert_eq!(vec![1, 2, 3], Fact::new(4, vec![1, 2, 3]).args());
     }
 }
