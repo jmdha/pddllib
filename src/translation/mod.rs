@@ -11,7 +11,12 @@ use crate::{
 };
 use itertools::Itertools;
 use pddlp::{domain::Domain, problem::Problem};
-use std::{collections::BTreeSet, fmt::Display, fs, io, path::PathBuf};
+use std::{
+    collections::{BTreeSet, HashMap},
+    fmt::Display,
+    fs, io,
+    path::PathBuf,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -77,12 +82,22 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
             ))
         }
     };
+    let predicate_map: HashMap<&str, usize> = predicates
+        .iter()
+        .enumerate()
+        .map(|(i, p)| (p.name.as_str(), i))
+        .collect();
     let objects = match &problem.objects {
         Some(objects) => objects::translate(&types, objects),
         None => {
             return Err(Error::MissingField("Objects are undefined in problem"))
         }
     };
+    let object_map: HashMap<&str, usize> = objects
+        .iter()
+        .enumerate()
+        .map(|(i, p)| (p.name.as_str(), i))
+        .collect();
     let actions =
         actions::translate(&types, &predicates, &objects, &domain.actions);
     let static_predicates: BTreeSet<_> = (0..predicates.len())
@@ -99,18 +114,10 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .iter()
         .map(|fact| {
             Fact::new(
-                predicates
-                    .iter()
-                    .position(|predicate| predicate.name == fact.predicate)
-                    .expect(""),
+                *predicate_map.get(fact.predicate).unwrap(),
                 fact.objects
                     .iter()
-                    .map(|o| {
-                        objects
-                            .iter()
-                            .position(|object| *o == object.name)
-                            .expect("")
-                    })
+                    .map(|o| *object_map.get(o).unwrap())
                     .collect(),
             )
         })
