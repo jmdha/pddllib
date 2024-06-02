@@ -29,11 +29,10 @@ pub fn instantiate_action<'a>(
     }
     // Generate candidate args according to parameter types and unary atoms
     let candidates: Vec<Vec<usize>> = {
-        let objects = task.objects_by_type();
         let mut candidates: Vec<Vec<usize>> = action
             .parameters
             .iter()
-            .map(|p| objects[p.type_index].to_owned())
+            .map(|p| task.objects_typed[p.type_index].to_owned())
             .collect();
         action
             .precondition

@@ -23,6 +23,7 @@ pub struct Task {
     pub predicates: Vec<Predicate>,
     pub actions: Vec<Action>,
     pub objects: Vec<Object>,
+    pub objects_typed: Vec<Vec<usize>>,
     pub init: State,
     pub goal: Goal,
     pub static_predicates: BTreeSet<usize>,
@@ -30,17 +31,6 @@ pub struct Task {
 }
 
 impl Task {
-    pub fn objects_by_type(&self) -> Vec<Vec<usize>> {
-        let mut objects = vec![vec![]; self.types.len()];
-
-        for (i, object) in self.objects.iter().enumerate() {
-            for type_index in object.types.iter() {
-                objects[*type_index].push(i);
-            }
-        }
-
-        objects
-    }
     pub fn trace_path(&self, states: &Vec<State>) -> Plan {
         let mut path = Vec::new();
 
