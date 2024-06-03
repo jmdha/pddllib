@@ -1,5 +1,5 @@
 use crate::task::{action::Action, Goal, Task};
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Fact {
@@ -35,9 +35,15 @@ impl Fact {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct State {
-    facts: BTreeSet<Fact>,
+    facts: HashSet<Fact>,
+}
+
+impl std::hash::Hash for State {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.facts.iter().for_each(|fact| fact.hash(state))
+    }
 }
 
 impl State {
