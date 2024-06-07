@@ -400,9 +400,9 @@ dependencies = [
 
 [[package]]
 name = "pddlp"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32ce8c4774f034543ead262b23992657cb1651d9cfe8c205e7e6b4a1ef49ac98"
+checksum = "b57690543fea04fdee5309b1a4b8f96a2fd0b66eef37d05b8197f662e5292709"
 dependencies = [
  "logos",
 ]
