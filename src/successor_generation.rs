@@ -1,7 +1,7 @@
 use crate::{
     state::State,
     task::{
-        action::{Action, Argument, AtomKind},
+        action::{Action, AtomKind},
         Task,
     },
 };
@@ -40,14 +40,9 @@ pub fn instantiate_action<'a>(
             .filter(|a| a.args.len() == 1)
             .for_each(|a| {
                 let arg = &a.args[0];
-                match arg {
-                    Argument::Index(i) => {
-                        candidates[*i].retain(|o| {
-                            state.has_unary(task, a.predicate, o) == a.value
-                        });
-                    }
-                    Argument::Const(_) => todo!(),
-                }
+                candidates[*arg].retain(|o| {
+                    state.has_unary(task, a.predicate, o) == a.value
+                });
             });
 
         candidates

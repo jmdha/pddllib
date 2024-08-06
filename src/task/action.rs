@@ -12,7 +12,7 @@ pub struct Action {
 pub struct Atom {
     pub predicate: usize,
     pub kind: AtomKind,
-    pub args: Vec<Argument>,
+    pub args: Vec<usize>,
     pub value: bool,
 }
 
@@ -22,20 +22,8 @@ pub enum AtomKind {
     Equal,
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
-pub enum Argument {
-    Index(usize),
-    Const(usize),
-}
-
 impl Atom {
     pub fn map_args(&self, args: &Vec<usize>) -> Vec<usize> {
-        self.args
-            .iter()
-            .map(|a| match a {
-                Argument::Index(i) => args[*i],
-                Argument::Const(i) => *i,
-            })
-            .collect()
+        self.args.iter().map(|a| args[*a]).collect()
     }
 }

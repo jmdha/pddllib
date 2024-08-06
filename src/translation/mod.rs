@@ -98,8 +98,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .enumerate()
         .map(|(i, p)| (p.name.as_str(), i))
         .collect();
-    let actions =
-        actions::translate(&types, &predicates, &objects, &domain.actions);
+    let actions = actions::translate(&types, &predicates, &domain.actions);
     let static_predicates: BTreeSet<_> = (0..predicates.len())
         .filter(|i| {
             !actions
@@ -157,7 +156,6 @@ pub fn translate_action(task: &Task, input: &str) -> Result<Action> {
     Ok(actions::translate_action(
         &task.types,
         &task.predicates,
-        &task.objects,
         &action,
     ))
 }
