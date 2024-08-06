@@ -75,7 +75,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     };
     let types = types::translate(&domain.types);
     let predicates = match &domain.predicates {
-        Some(predicates) => predicates::translate(&types, &predicates),
+        Some(predicates) => predicates::translate(&predicates),
         None => {
             return Err(Error::MissingField(
                 "Predicates are undefined in domain",

@@ -1,15 +1,12 @@
-use super::parameters;
-use crate::task::{predicate::{Predicate, PredicateKind}, r#type::Type};
+use crate::task::predicate::{Predicate, PredicateKind};
 
 pub fn translate(
-    types: &Vec<Type>,
     predicates: &Vec<pddlp::domain::Predicate>,
 ) -> Vec<Predicate> {
     predicates
         .iter()
         .map(|p| Predicate {
             name: p.name.to_owned(),
-            parameters: parameters::translate(types, &p.parameters),
             kind: PredicateKind::Predicate
         })
         .collect()
