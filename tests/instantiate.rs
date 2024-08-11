@@ -10,8 +10,7 @@ fn blocksworld() {
     let problem = data.join("blocksworld").join("problem.pddl");
     let task = translate_from_file(&domain, &problem).unwrap();
     let generator = Generator::init(&task);
-    let init = State::new(task.init.to_owned());
-    let operators = generator.instantiate_all(&init);
+    let operators = generator.instantiate_all(&task.init);
     assert_eq!(3, operators.len());
     assert_eq!("pickup", &operators[0].action.name);
     assert_eq!("pickup", &operators[1].action.name);

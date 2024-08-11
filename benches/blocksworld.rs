@@ -1,5 +1,5 @@
 use std::path::PathBuf;
-use pddllib::{generator::Generator, state::State, translate::translate_from_file};
+use pddllib::{generator::Generator, translate::translate_from_file};
 
 fn main() {
     divan::main();
@@ -12,6 +12,5 @@ fn instantiate() {
     let problem = data.join("blocksworld").join("problem.pddl");
     let task = translate_from_file(&domain, &problem).unwrap();
     let generator = Generator::init(&task);
-    let init = State::new(task.init.to_owned());
-    let _ = generator.instantiate_all(&init);
+    let _ = generator.instantiate_all(&task.init);
 }

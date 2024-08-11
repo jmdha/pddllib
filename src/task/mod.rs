@@ -20,7 +20,7 @@ pub struct Task {
     pub predicates: Vec<Predicate>,
     pub actions: Vec<Action>,
     pub objects: Vec<Object>,
-    pub init: Vec<Fact>,
+    pub init: State,
     pub goal: Vec<(Fact, bool)>,
 }
 

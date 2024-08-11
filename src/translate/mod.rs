@@ -6,13 +6,13 @@ mod predicates;
 mod types;
 
 use crate::{
-    state::Fact,
+    state::{Fact, State},
     task::{action::Action, Task},
 };
 use itertools::Itertools;
 use pddlp::{domain::Domain, problem::Problem};
 use std::{
-    collections::{BTreeSet, HashMap},
+    collections::HashMap,
     fmt::Display,
     fs, io,
     path::PathBuf,
@@ -99,7 +99,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .map(|(i, p)| (p.name.as_str(), i))
         .collect();
     let actions = actions::translate(&types, &predicates, &domain.actions);
-    let init = problem
+    let facts = problem
         .init
         .as_ref()
         .expect("Problem missing init")
@@ -125,7 +125,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         predicates,
         actions,
         objects,
-        init,
+        init: State::new(facts),
         goal,
     })
 }
