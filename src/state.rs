@@ -1,4 +1,4 @@
-use crate::task::{action::Action, Goal, Task};
+use crate::task::{action::Action, Task};
 use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -92,7 +92,7 @@ impl State {
         }
         state
     }
-    pub fn covers(&self, task: &Task, goal: &Goal) -> bool {
+    pub fn covers(&self, task: &Task, goal: &Vec<(Fact, bool)>) -> bool {
         goal.iter().all(|(f, v)| self.has_fact(task, f) == *v)
     }
 }

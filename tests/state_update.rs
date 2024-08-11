@@ -1,5 +1,5 @@
 mod blocksworld {
-    use pddllib::translate::translate;
+    use pddllib::{state::State, translate::translate};
     pub const DOMAIN: &'static str = "
 ;; source: https://github.com/AI-Planning/pddl-generators/blob/main/blocksworld/domain.pddl
 ;;
@@ -59,11 +59,12 @@ mod blocksworld {
     #[test]
     fn instantiate() {
         let task = translate(DOMAIN, PROBLEM).unwrap();
-        assert!(task.init.has_unary(&task, 0, &0));
-        assert!(task.init.has_unary(&task, 1, &0));
-        assert!(task.init.has_nullary(&task, 2));
-        assert!(!task.init.covers(&task, &task.goal));
-        let state = task.init.apply(&task.actions[0], &vec![0]);
+        let init = State::new(task.init.to_owned());
+        assert!(init.has_unary(&task, 0, &0));
+        assert!(init.has_unary(&task, 1, &0));
+        assert!(init.has_nullary(&task, 2));
+        assert!(!init.covers(&task, &task.goal));
+        let state = init.apply(&task.actions[0], &vec![0]);
         assert!(state.has_unary(&task, 3, &0));
         assert!(!state.has_unary(&task, 0, &0));
         assert!(!state.has_unary(&task, 1, &0));

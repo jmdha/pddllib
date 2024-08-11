@@ -14,7 +14,6 @@ use crate::{
 use std::collections::BTreeSet;
 
 pub type Plan<'a> = Vec<Operator<'a>>;
-pub type Goal = Vec<(Fact, bool)>;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Task {
     pub domain_name: Option<String>,
@@ -24,8 +23,8 @@ pub struct Task {
     pub actions: Vec<Action>,
     pub objects: Vec<Object>,
     pub objects_typed: Vec<Vec<usize>>,
-    pub init: State,
-    pub goal: Goal,
+    pub init: Vec<Fact>,
+    pub goal: Vec<(Fact, bool)>,
     pub static_predicates: BTreeSet<usize>,
     pub static_facts: BTreeSet<Fact>,
 }

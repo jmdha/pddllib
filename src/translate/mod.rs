@@ -6,7 +6,7 @@ mod predicates;
 mod types;
 
 use crate::{
-    state::{Fact, State},
+    state::Fact,
     task::{action::Action, Task},
 };
 use itertools::Itertools;
@@ -124,7 +124,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     let (static_facts, mutable_facts) = facts
         .into_iter()
         .partition(|fact| static_predicates.contains(&fact.predicate()));
-    let init = State::new(mutable_facts);
+    let init = mutable_facts;
     let goal = match &problem.goal {
         Some(goal) => goal::translate(&predicates, &objects, goal),
         None => return Err(Error::MissingField("No goal defined in problem")),

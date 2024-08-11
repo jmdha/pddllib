@@ -1,13 +1,13 @@
 use crate::{
     state::Fact,
-    task::{object::Object, predicate::Predicate, Goal},
+    task::{object::Object, predicate::Predicate},
 };
 
 pub fn translate(
     predicates: &Vec<Predicate>,
     objects: &Vec<Object>,
     goal: &pddlp::problem::Goal,
-) -> Goal {
+) -> Vec<(Fact, bool)> {
     let mut goal_facts: Vec<(Fact, bool)> = Vec::new();
     let mut queue: Vec<(&pddlp::problem::Goal, bool)> = vec![(goal, true)];
 
