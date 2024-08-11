@@ -23,7 +23,7 @@ pub fn instantiate_action<'a>(
         .precondition
         .iter()
         .filter(|a| a.args.is_empty())
-        .any(|a| state.has_nullary(task, a.predicate) != a.value)
+        .any(|a| state.has_nullary(a.predicate) != a.value)
     {
         return vec![];
     }
@@ -41,7 +41,7 @@ pub fn instantiate_action<'a>(
             .for_each(|a| {
                 let arg = &a.args[0];
                 candidates[*arg].retain(|o| {
-                    state.has_unary(task, a.predicate, o) == a.value
+                    state.has_unary(a.predicate, o) == a.value
                 });
             });
 
@@ -60,7 +60,7 @@ pub fn instantiate_action<'a>(
                     let args = a.map_args(args);
                     return match a.kind {
                         AtomKind::Fact => {
-                            state.has_nary(task, a.predicate, &args)
+                            state.has_nary(a.predicate, &args)
                         }
                         AtomKind::Equal => args.iter().all_equal(),
                     } == a.value;
@@ -80,7 +80,7 @@ pub fn instantiate_actions<'a>(
         .collect()
 }
 
-pub fn successors(task: &Task, state: &State) -> Vec<State> {
+pub fn successors<'a>(task: &'a Task, state: &'a State) -> Vec<State<'a>> {
     instantiate_actions(task, state)
         .iter()
         .map(|o| state.apply(o.action, &o.args))

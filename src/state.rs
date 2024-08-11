@@ -36,13 +36,15 @@ impl Fact {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct State {
+pub struct State<'a> {
+    statics: &'a BTreeSet<Fact>,
     facts: BTreeSet<Fact>,
 }
 
-impl State {
-    pub fn new(facts: Vec<Fact>) -> Self {
+impl<'a> State<'a> {
+    pub fn new(task: &'a Task, facts: Vec<Fact>) -> Self {
         State {
+            statics: &task.static_facts,
             facts: facts.into_iter().collect(),
         }
     }
@@ -51,30 +53,28 @@ impl State {
         self.facts.len()
     }
     #[inline(always)]
-    pub fn has_nullary(&self, task: &Task, predicate: usize) -> bool {
-        self.has_fact(task, &Fact::new(predicate, vec![]))
+    pub fn has_nullary(&self, predicate: usize) -> bool {
+        self.has_fact(&Fact::new(predicate, vec![]))
     }
     #[inline(always)]
     pub fn has_unary(
         &self,
-        task: &Task,
         predicate: usize,
         arg: &usize,
     ) -> bool {
-        self.has_fact(task, &Fact::new(predicate, vec![*arg]))
+        self.has_fact(&Fact::new(predicate, vec![*arg]))
     }
     #[inline(always)]
     pub fn has_nary(
         &self,
-        task: &Task,
         predicate: usize,
         args: &Vec<usize>,
     ) -> bool {
-        self.has_fact(task, &Fact::new(predicate, args.to_owned()))
+        self.has_fact(&Fact::new(predicate, args.to_owned()))
     }
     #[inline(always)]
-    pub fn has_fact(&self, task: &Task, fact: &Fact) -> bool {
-        task.static_facts.contains(fact) || self.facts.contains(fact)
+    pub fn has_fact(&self, fact: &Fact) -> bool {
+        self.statics.contains(fact) || self.facts.contains(fact)
     }
     pub fn apply(&self, action: &Action, args: &Vec<usize>) -> Self {
         let mut state = self.clone();
@@ -92,8 +92,8 @@ impl State {
         }
         state
     }
-    pub fn covers(&self, task: &Task, goal: &Vec<(Fact, bool)>) -> bool {
-        goal.iter().all(|(f, v)| self.has_fact(task, f) == *v)
+    pub fn covers(&self, goal: &Vec<(Fact, bool)>) -> bool {
+        goal.iter().all(|(f, v)| self.has_fact(f) == *v)
     }
 }
 

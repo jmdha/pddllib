@@ -61,7 +61,7 @@ mod blocksworld {
     #[test]
     fn instantiate() {
         let task = translate(DOMAIN, PROBLEM).unwrap();
-        let init = State::new(task.init.to_owned());
+        let init = State::new(&task, task.init.to_owned());
         let operators = instantiate_actions(&task, &init);
         assert_eq!(2, operators.len());
         assert_eq!("pickup", &operators[0].action.name);
