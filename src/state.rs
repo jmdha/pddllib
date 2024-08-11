@@ -36,15 +36,13 @@ impl Fact {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct State<'a> {
-    statics: &'a BTreeSet<Fact>,
+pub struct State {
     facts: BTreeSet<Fact>,
 }
 
-impl<'a> State<'a> {
-    pub fn new(task: &'a Task, facts: Vec<Fact>) -> Self {
+impl State {
+    pub fn new(facts: Vec<Fact>) -> Self {
         State {
-            statics: &task.static_facts,
             facts: facts.into_iter().collect(),
         }
     }
@@ -74,7 +72,7 @@ impl<'a> State<'a> {
     }
     #[inline(always)]
     pub fn has_fact(&self, fact: &Fact) -> bool {
-        self.statics.contains(fact) || self.facts.contains(fact)
+        self.facts.contains(fact)
     }
     pub fn apply(&self, action: &Action, args: &Vec<usize>) -> Self {
         let mut state = self.clone();

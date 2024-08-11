@@ -10,7 +10,6 @@ use self::{
 use crate::{
     generator::Generator, operator::Operator, state::{Fact, State}
 };
-use std::collections::BTreeSet;
 
 pub type Plan<'a> = Vec<Operator<'a>>;
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -23,8 +22,6 @@ pub struct Task {
     pub objects: Vec<Object>,
     pub init: Vec<Fact>,
     pub goal: Vec<(Fact, bool)>,
-    pub static_predicates: BTreeSet<usize>,
-    pub static_facts: BTreeSet<Fact>,
 }
 
 impl<'a> Task {

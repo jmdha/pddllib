@@ -99,14 +99,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .map(|(i, p)| (p.name.as_str(), i))
         .collect();
     let actions = actions::translate(&types, &predicates, &domain.actions);
-    let static_predicates: BTreeSet<_> = (0..predicates.len())
-        .filter(|i| {
-            !actions
-                .iter()
-                .any(|a| a.effect.iter().any(|a| a.predicate == *i))
-        })
-        .collect();
-    let facts = problem
+    let init = problem
         .init
         .as_ref()
         .expect("Problem missing init")
@@ -121,10 +114,6 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
             )
         })
         .collect_vec();
-    let (static_facts, mutable_facts) = facts
-        .into_iter()
-        .partition(|fact| static_predicates.contains(&fact.predicate()));
-    let init = mutable_facts;
     let goal = match &problem.goal {
         Some(goal) => goal::translate(&predicates, &objects, goal),
         None => return Err(Error::MissingField("No goal defined in problem")),
@@ -138,8 +127,6 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         objects,
         init,
         goal,
-        static_facts: static_facts.into_iter().collect(),
-        static_predicates,
     })
 }
 
