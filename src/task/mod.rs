@@ -8,8 +8,7 @@ use self::{
     action::Action, object::Object, predicate::Predicate, r#type::Type,
 };
 use crate::{
-    state::{Fact, State},
-    successor_generation::{instantiate_actions, Operator},
+    generator::Generator, operator::Operator, state::{Fact, State}
 };
 use std::collections::BTreeSet;
 
@@ -22,20 +21,20 @@ pub struct Task {
     pub predicates: Vec<Predicate>,
     pub actions: Vec<Action>,
     pub objects: Vec<Object>,
-    pub objects_typed: Vec<Vec<usize>>,
     pub init: Vec<Fact>,
     pub goal: Vec<(Fact, bool)>,
     pub static_predicates: BTreeSet<usize>,
     pub static_facts: BTreeSet<Fact>,
 }
 
-impl Task {
-    pub fn trace_path(&self, states: &Vec<State>) -> Option<Plan> {
+impl<'a> Task {
+    pub fn trace_path(&'a self, states: &'a Vec<State>) -> Option<Plan> {
+        let generator = Generator::init(self);
         let mut path = Vec::new();
 
         for i in 0..states.len() - 1 {
             let state = &states[i];
-            let operators = instantiate_actions(self, state);
+            let operators = generator.instantiate_all(state);
             let operator = operators
                 .into_iter()
                 .find(|o| state.apply(o.action, &o.args) == states[i + 1])?;

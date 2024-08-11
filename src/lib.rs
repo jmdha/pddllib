@@ -1,5 +1,6 @@
 pub mod state;
-pub mod successor_generation;
+pub mod operator;
 pub mod task;
 #[cfg(feature = "translate")]
 pub mod translate;
+pub mod generator;

@@ -129,13 +129,6 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         Some(goal) => goal::translate(&predicates, &objects, goal),
         None => return Err(Error::MissingField("No goal defined in problem")),
     };
-    let mut objects_typed = vec![vec![]; types.len()];
-
-    for (i, object) in objects.iter().enumerate() {
-        for type_index in object.types.iter() {
-            objects_typed[*type_index].push(i);
-        }
-    }
     Ok(Task {
         domain_name,
         problem_name,
@@ -143,7 +136,6 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         predicates,
         actions,
         objects,
-        objects_typed,
         init,
         goal,
         static_facts: static_facts.into_iter().collect(),

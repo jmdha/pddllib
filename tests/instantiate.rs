@@ -1,8 +1,6 @@
 use std::path::PathBuf;
 use pddllib::{
-    state::State,
-    successor_generation::instantiate_actions,
-    translate::translate_from_file,
+    generator::Generator, state::State, translate::translate_from_file
 };
 
 #[test]
@@ -11,8 +9,9 @@ fn blocksworld() {
     let domain = data.join("blocksworld").join("domain.pddl");
     let problem = data.join("blocksworld").join("problem.pddl");
     let task = translate_from_file(&domain, &problem).unwrap();
+    let generator = Generator::init(&task);
     let init = State::new(&task, task.init.to_owned());
-    let operators = instantiate_actions(&task, &init);
+    let operators = generator.instantiate_all(&init);
     assert_eq!(3, operators.len());
     assert_eq!("pickup", &operators[0].action.name);
     assert_eq!("pickup", &operators[1].action.name);
