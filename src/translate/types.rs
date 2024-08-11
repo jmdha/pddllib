@@ -34,7 +34,7 @@ pub fn translate(types: &Option<Vec<pddlp::domain::Type>>) -> Vec<Type> {
 mod test {
     use crate::{
         task::r#type::Type,
-        translation::types::{translate_typed, translate_untyped},
+        translate::types::{translate_typed, translate_untyped},
     };
 
     #[test]

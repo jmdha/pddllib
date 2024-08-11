@@ -1,6 +1,6 @@
 mod blocksworld {
     use pddllib::{
-        successor_generation::instantiate_actions, translation::translate,
+        successor_generation::instantiate_actions, translate::translate,
     };
     pub const DOMAIN: &'static str = "
 ;; source: https://github.com/AI-Planning/pddl-generators/blob/main/blocksworld/domain.pddl

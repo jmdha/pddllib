@@ -1,5 +1,5 @@
 mod blocksworld {
-    use pddllib::translation::translate;
+    use pddllib::translate::translate;
     pub const DOMAIN: &'static str = "
 ;; source: https://github.com/AI-Planning/pddl-generators/blob/main/blocksworld/domain.pddl
 ;;
