@@ -24,3 +24,7 @@ translate = ["dep:pddlp"]
 [[bench]]
 name = "blocksworld"
 harness = false
+
+[[bench]]
+name = "gripper"
+harness = false
