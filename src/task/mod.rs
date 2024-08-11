@@ -30,7 +30,7 @@ pub struct Task {
 }
 
 impl Task {
-    pub fn trace_path(&self, states: &Vec<State>) -> Plan {
+    pub fn trace_path(&self, states: &Vec<State>) -> Option<Plan> {
         let mut path = Vec::new();
 
         for i in 0..states.len() - 1 {
@@ -38,12 +38,11 @@ impl Task {
             let operators = instantiate_actions(self, state);
             let operator = operators
                 .into_iter()
-                .find(|o| state.apply(o.action, &o.args) == states[i + 1])
-                .unwrap();
+                .find(|o| state.apply(o.action, &o.args) == states[i + 1])?;
             path.push(operator);
         }
 
-        path
+        Some(path)
     }
     pub fn export_plan(&self, plan: &Plan) -> String {
         plan.iter()
