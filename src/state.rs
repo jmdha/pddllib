@@ -1,4 +1,4 @@
-use crate::task::{action::Action, Task};
+use crate::task::action::Action;
 use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
