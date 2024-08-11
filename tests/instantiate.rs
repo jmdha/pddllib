@@ -1,0 +1,20 @@
+use std::path::PathBuf;
+use pddllib::{
+    state::State,
+    successor_generation::instantiate_actions,
+    translate::translate_from_file,
+};
+
+#[test]
+fn blocksworld() {
+    let data = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data");
+    let domain = data.join("blocksworld").join("domain.pddl");
+    let problem = data.join("blocksworld").join("problem.pddl");
+    let task = translate_from_file(&domain, &problem).unwrap();
+    let init = State::new(&task, task.init.to_owned());
+    let operators = instantiate_actions(&task, &init);
+    assert_eq!(3, operators.len());
+    assert_eq!("pickup", &operators[0].action.name);
+    assert_eq!("pickup", &operators[1].action.name);
+    assert_eq!("pickup", &operators[2].action.name);
+}
