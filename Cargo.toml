@@ -13,14 +13,6 @@ itertools = "0.13.0"
 pddlp = { version = "0.1.7", optional = true }
 thiserror = "1.0.61"
 
-[dev-dependencies]
-pathfinding = "4.9.1"
-criterion = "0.5.1"
-
 [features]
 default = ["translate"]
 translate = ["dep:pddlp"]
-
-[[bench]]
-name = "bench_main"
-harness = false
