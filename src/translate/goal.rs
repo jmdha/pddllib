@@ -1,5 +1,4 @@
 use indexmap::IndexSet;
-
 use crate::{
     state::Fact,
     task::predicate::Predicate,

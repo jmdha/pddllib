@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 use pddllib::{
-    generator::Generator, state::State, translate::translate_from_file
+    generator::Generator, translate::translate_from_file
 };
 
 #[test]

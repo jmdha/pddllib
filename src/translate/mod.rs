@@ -1,4 +1,5 @@
 mod actions;
+pub mod error;
 mod goal;
 mod parameters;
 mod predicates;
@@ -8,41 +9,11 @@ use crate::{
     state::{Fact, State},
     task::Task,
 };
+use error::{Error, Field, Result};
 use indexmap::IndexSet;
 use itertools::Itertools;
 use pddlp::{domain::Domain, problem::Problem};
-use std::{collections::HashMap, fmt::Display, fs, io, path::PathBuf};
-
-#[derive(Debug, thiserror::Error)]
-pub enum Error {
-    IoError(io::Error),
-    ParsingError(pddlp::Error),
-    MissingField(&'static str),
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Error::IoError(error) => write!(f, "{}", error),
-            Error::ParsingError(error) => write!(f, "{:?}", error),
-            Error::MissingField(error) => write!(f, "{}", error),
-        }
-    }
-}
-
-impl From<io::Error> for Error {
-    fn from(value: io::Error) -> Self {
-        Error::IoError(value)
-    }
-}
-
-impl From<pddlp::Error> for Error {
-    fn from(value: pddlp::Error) -> Self {
-        Error::ParsingError(value)
-    }
-}
-
-pub type Result<T> = std::result::Result<T, Error>;
+use std::{collections::HashMap, fs, path::PathBuf};
 
 pub fn translate_from_file(
     domain: &PathBuf,
@@ -65,11 +36,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     let types = types::translate(&domain.types);
     let predicates = match &domain.predicates {
         Some(predicates) => predicates::translate(&predicates),
-        None => {
-            return Err(Error::MissingField(
-                "Predicates are undefined in domain",
-            ))
-        }
+        None => return Err(Error::MissingField(Field::Predicates)),
     };
     let predicate_map: HashMap<&str, usize> = predicates
         .iter()
@@ -79,7 +46,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     let objects: IndexSet<String> = problem
         .objects
         .as_ref()
-        .ok_or(Error::MissingField("Objects"))?
+        .ok_or(Error::MissingField(Field::Objects))?
         .iter()
         .map(|o| o.name.to_owned())
         .collect();
@@ -101,7 +68,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .collect_vec();
     let goal = match &problem.goal {
         Some(goal) => goal::translate(&predicates, &objects, goal),
-        None => return Err(Error::MissingField("No goal defined in problem")),
+        None => return Err(Error::MissingField(Field::Goal)),
     };
     Ok(Task {
         domain_name,
