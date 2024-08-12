@@ -1,14 +1,14 @@
 mod actions;
 mod goal;
-mod objects;
 mod parameters;
 mod predicates;
 mod types;
 
 use crate::{
     state::{Fact, State},
-    task::{action::Action, Task},
+    task::Task,
 };
+use indexmap::IndexSet;
 use itertools::Itertools;
 use pddlp::{domain::Domain, problem::Problem};
 use std::{collections::HashMap, fmt::Display, fs, io, path::PathBuf};
@@ -76,16 +76,12 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .enumerate()
         .map(|(i, p)| (p.name.as_str(), i))
         .collect();
-    let objects = match &problem.objects {
-        Some(objects) => objects::translate(&types, objects),
-        None => {
-            return Err(Error::MissingField("Objects are undefined in problem"))
-        }
-    };
-    let object_map: HashMap<&str, usize> = objects
+    let objects: IndexSet<String> = problem
+        .objects
+        .as_ref()
+        .ok_or(Error::MissingField("Objects"))?
         .iter()
-        .enumerate()
-        .map(|(i, p)| (p.name.as_str(), i))
+        .map(|o| o.name.to_owned())
         .collect();
     let actions = actions::translate(&types, &predicates, &domain.actions);
     let facts = problem
@@ -98,7 +94,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
                 *predicate_map.get(fact.predicate).unwrap(),
                 fact.objects
                     .iter()
-                    .map(|o| *object_map.get(o).unwrap())
+                    .map(|o| objects.get_index_of(*o).unwrap())
                     .collect(),
             )
         })
@@ -110,20 +106,10 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     Ok(Task {
         domain_name,
         problem_name,
-        types,
         predicates,
         actions,
         objects,
         init: State::new(facts),
         goal,
     })
-}
-
-pub fn translate_action(task: &Task, input: &str) -> Result<Action> {
-    let action = pddlp::domain::action::parse(input)?;
-    Ok(actions::translate_action(
-        &task.types,
-        &task.predicates,
-        &action,
-    ))
 }

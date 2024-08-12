@@ -1,16 +1,16 @@
+use indexmap::IndexMap;
 use pddlp::domain::Expression;
 
 use crate::task::{
     action::{Action, Atom, AtomKind::Fact},
     parameter::Parameter,
     predicate::Predicate,
-    r#type::Type,
 };
 
 use super::parameters;
 
 pub fn translate(
-    types: &Vec<Type>,
+    types: &IndexMap<String, Option<usize>>,
     predicates: &Vec<Predicate>,
     actions: &Vec<pddlp::domain::Action>,
 ) -> Vec<Action> {
@@ -21,7 +21,7 @@ pub fn translate(
 }
 
 pub fn translate_action(
-    types: &Vec<Type>,
+    types: &IndexMap<String, Option<usize>>,
     predicates: &Vec<Predicate>,
     action: &pddlp::domain::Action,
 ) -> Action {

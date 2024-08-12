@@ -1,11 +1,13 @@
+use indexmap::IndexSet;
+
 use crate::{
     state::Fact,
-    task::{object::Object, predicate::Predicate},
+    task::predicate::Predicate,
 };
 
 pub fn translate(
     predicates: &Vec<Predicate>,
-    objects: &Vec<Object>,
+    objects: &IndexSet<String>,
     goal: &pddlp::problem::Goal,
 ) -> Vec<(Fact, bool)> {
     let mut goal_facts: Vec<(Fact, bool)> = Vec::new();
@@ -21,9 +23,7 @@ pub fn translate(
                         .unwrap(),
                     g.objects
                         .iter()
-                        .map(|o| {
-                            objects.iter().position(|o2| o == &o2.name).unwrap()
-                        })
+                        .map(|o| objects.get_index_of(*o).unwrap())
                         .collect(),
                 ),
                 value,

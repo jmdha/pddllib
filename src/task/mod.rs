@@ -2,10 +2,11 @@ pub mod action;
 pub mod object;
 pub mod parameter;
 pub mod predicate;
-pub mod r#type;
+
+use indexmap::IndexSet;
 
 use self::{
-    action::Action, object::Object, predicate::Predicate, r#type::Type,
+    action::Action, predicate::Predicate
 };
 use crate::{
     generator::Generator, operator::Operator, state::{Fact, State}
@@ -16,10 +17,9 @@ pub type Plan<'a> = Vec<Operator<'a>>;
 pub struct Task {
     pub domain_name: Option<String>,
     pub problem_name: Option<String>,
-    pub types: Vec<Type>,
     pub predicates: Vec<Predicate>,
     pub actions: Vec<Action>,
-    pub objects: Vec<Object>,
+    pub objects: IndexSet<String>,
     pub init: State,
     pub goal: Vec<(Fact, bool)>,
 }
@@ -48,7 +48,7 @@ impl<'a> Task {
                     o.action.name,
                     o.args
                         .iter()
-                        .map(|i| format!(" {}", self.objects[*i].name))
+                        .map(|i| format!(" {}", self.objects[*i]))
                         .collect::<String>()
                 )
             })
