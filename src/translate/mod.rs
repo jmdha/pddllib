@@ -34,10 +34,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     let domain_name = domain.name.map(|name| name.to_owned());
     let problem_name = problem.name.map(|name| name.to_owned());
     let types = types::translate(&domain.types);
-    let predicates = match &domain.predicates {
-        Some(predicates) => predicates::translate(&predicates),
-        None => return Err(Error::MissingField(Field::Predicates)),
-    };
+    let predicates = predicates::try_translate(&domain.predicates)?;
     let predicate_map: HashMap<&str, usize> = predicates
         .iter()
         .enumerate()
