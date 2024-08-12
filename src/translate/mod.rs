@@ -11,12 +11,7 @@ use crate::{
 };
 use itertools::Itertools;
 use pddlp::{domain::Domain, problem::Problem};
-use std::{
-    collections::HashMap,
-    fmt::Display,
-    fs, io,
-    path::PathBuf,
-};
+use std::{collections::HashMap, fmt::Display, fs, io, path::PathBuf};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -65,14 +60,8 @@ pub fn translate<'a>(domain: &'a str, problem: &'a str) -> Result<Task> {
 }
 
 pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
-    let domain_name = match domain.name {
-        Some(name) => Some(name.to_owned()),
-        None => None,
-    };
-    let problem_name = match problem.name {
-        Some(name) => Some(name.to_owned()),
-        None => None,
-    };
+    let domain_name = domain.name.map(|name| name.to_owned());
+    let problem_name = problem.name.map(|name| name.to_owned());
     let types = types::translate(&domain.types);
     let predicates = match &domain.predicates {
         Some(predicates) => predicates::translate(&predicates),
