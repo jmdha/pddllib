@@ -6,15 +6,11 @@ mod parameters;
 mod predicates;
 mod types;
 
-use crate::{
-    state::{Fact, State},
-    task::Task,
-};
+use crate::task::Task;
 use error::{Error, Field, Result};
 use indexmap::IndexSet;
-use itertools::Itertools;
 use pddlp::{domain::Domain, problem::Problem};
-use std::{collections::HashMap, fs, path::PathBuf};
+use std::{fs, path::PathBuf};
 
 pub fn translate_from_file(
     domain: &PathBuf,

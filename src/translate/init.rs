@@ -1,11 +1,9 @@
-use indexmap::IndexSet;
-use itertools::Itertools;
-
 use super::error::{Error, Field, Result};
 use crate::{
     state::{Fact, State},
-    task::predicate::{Predicate, PredicateKind},
+    task::predicate::Predicate,
 };
+use indexmap::IndexSet;
 
 pub fn translate(
     predicates: &Vec<Predicate>,
