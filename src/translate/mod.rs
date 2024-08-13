@@ -41,10 +41,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .collect();
     let actions = actions::translate(&types, &predicates, &domain.actions);
     let init = init::try_translate(&predicates, &objects, &problem.init)?;
-    let goal = match &problem.goal {
-        Some(goal) => goal::translate(&predicates, &objects, goal),
-        None => return Err(Error::MissingField(Field::Goal)),
-    };
+    let goal = goal::try_translate(&predicates, &objects, &problem.goal)?;
     Ok(Task {
         domain_name,
         problem_name,

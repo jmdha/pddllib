@@ -1,8 +1,6 @@
+use super::error::{Error, Field, Result};
+use crate::{state::Fact, task::predicate::Predicate};
 use indexmap::IndexSet;
-use crate::{
-    state::Fact,
-    task::predicate::Predicate,
-};
 
 pub fn translate(
     predicates: &Vec<Predicate>,
@@ -36,4 +34,16 @@ pub fn translate(
     }
 
     goal_facts
+}
+
+pub fn try_translate(
+    predicates: &Vec<Predicate>,
+    objects: &IndexSet<String>,
+    goal: &Option<pddlp::problem::Goal>,
+) -> Result<Vec<(Fact, bool)>> {
+    Ok(translate(
+        predicates,
+        objects,
+        goal.as_ref().ok_or(Error::MissingField(Field::Goal))?,
+    ))
 }
