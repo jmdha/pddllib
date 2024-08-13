@@ -5,7 +5,7 @@ pub enum Field {
     Predicates,
     Objects,
     Init,
-    Goal
+    Goal,
 }
 
 impl Display for Field {
@@ -24,6 +24,7 @@ pub enum Error {
     IoError(io::Error),
     ParsingError(pddlp::Error),
     MissingField(Field),
+    Undeclared(Field, String),
 }
 
 impl Display for Error {
@@ -32,6 +33,9 @@ impl Display for Error {
             Error::IoError(error) => write!(f, "{}", error),
             Error::ParsingError(error) => write!(f, "{:?}", error),
             Error::MissingField(error) => write!(f, "{}", error),
+            Error::Undeclared(field, element) => {
+                write!(f, "Undeclared {} - {}", field, element)
+            }
         }
     }
 }

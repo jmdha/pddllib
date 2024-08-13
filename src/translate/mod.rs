@@ -1,6 +1,7 @@
 mod actions;
 pub mod error;
 mod goal;
+mod init;
 mod parameters;
 mod predicates;
 mod types;
@@ -35,11 +36,6 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     let problem_name = problem.name.map(|name| name.to_owned());
     let types = types::translate(&domain.types);
     let predicates = predicates::try_translate(&domain.predicates)?;
-    let predicate_map: HashMap<&str, usize> = predicates
-        .iter()
-        .enumerate()
-        .map(|(i, p)| (p.name.as_str(), i))
-        .collect();
     let objects: IndexSet<String> = problem
         .objects
         .as_ref()
@@ -48,21 +44,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .map(|o| o.name.to_owned())
         .collect();
     let actions = actions::translate(&types, &predicates, &domain.actions);
-    let facts = problem
-        .init
-        .as_ref()
-        .ok_or(Error::MissingField(Field::Init))?
-        .iter()
-        .map(|fact| {
-            Fact::new(
-                *predicate_map.get(fact.predicate).unwrap(),
-                fact.objects
-                    .iter()
-                    .map(|o| objects.get_index_of(*o).unwrap())
-                    .collect(),
-            )
-        })
-        .collect_vec();
+    let init = init::try_translate(&predicates, &objects, &problem.init)?;
     let goal = match &problem.goal {
         Some(goal) => goal::translate(&predicates, &objects, goal),
         None => return Err(Error::MissingField(Field::Goal)),
@@ -73,7 +55,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         predicates,
         actions,
         objects,
-        init: State::new(facts),
+        init,
         goal,
     })
 }

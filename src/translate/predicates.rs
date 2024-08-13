@@ -1,5 +1,4 @@
 use crate::task::predicate::{Predicate, PredicateKind};
-
 use super::error::{Error, Field, Result};
 
 pub fn translate(predicates: &Vec<pddlp::domain::Predicate>) -> Vec<Predicate> {
