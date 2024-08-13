@@ -51,7 +51,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     let facts = problem
         .init
         .as_ref()
-        .expect("Problem missing init")
+        .ok_or(Error::MissingField(Field::Init))?
         .iter()
         .map(|fact| {
             Fact::new(
