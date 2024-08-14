@@ -71,7 +71,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         predicates,
         actions,
         objects,
-        init: State::new(init),
+        init,
         goal,
     })
 }

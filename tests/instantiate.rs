@@ -1,4 +1,6 @@
-use pddllib::{generator::Generator, translate::translate_from_file};
+use pddllib::{
+    generator::Generator, state::State, translate::translate_from_file,
+};
 use std::path::PathBuf;
 
 #[test]
@@ -8,7 +10,8 @@ fn blocksworld() {
     let problem = data.join("blocksworld").join("problem.pddl");
     let task = translate_from_file(&domain, &problem).unwrap();
     let generator = Generator::init(&task);
-    let operators = generator.instantiate_all(&task.init);
+    let operators =
+        generator.instantiate_all(&State::new(task.init.to_owned()));
     assert_eq!(3, operators.len());
     assert_eq!("pickup", &operators[0].action.name);
     assert_eq!("pickup", &operators[1].action.name);
@@ -22,7 +25,8 @@ fn gripper() {
     let problem = data.join("gripper").join("problem.pddl");
     let task = translate_from_file(&domain, &problem).unwrap();
     let generator = Generator::init(&task);
-    let operators = generator.instantiate_all(&task.init);
+    let operators =
+        generator.instantiate_all(&State::new(task.init.to_owned()));
     assert_eq!(18, operators.len());
 }
 
@@ -33,6 +37,7 @@ fn miconic() {
     let problem = data.join("miconic").join("problem.pddl");
     let task = translate_from_file(&domain, &problem).unwrap();
     let generator = Generator::init(&task);
-    let operators = generator.instantiate_all(&task.init);
+    let operators =
+        generator.instantiate_all(&State::new(task.init.to_owned()));
     assert_eq!(4, operators.len());
 }
