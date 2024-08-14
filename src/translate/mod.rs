@@ -31,7 +31,8 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
     let domain_name = domain.name.map(|name| name.to_owned());
     let problem_name = problem.name.map(|name| name.to_owned());
     let types = types::translate(&domain.types);
-    let predicates = predicates::try_translate(&domain.predicates)?;
+    let mut predicates = predicates::try_translate(&domain.predicates)?;
+    predicates.append(&mut predicates::from_types(&types));
     let objects: IndexSet<String> = problem
         .objects
         .as_ref()

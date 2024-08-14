@@ -1,9 +1,7 @@
-use super::parameter::Parameter;
-
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Action {
     pub name: String,
-    pub parameters: Vec<Parameter>,
+    pub args: usize,
     pub precondition: Vec<Atom>,
     pub effect: Vec<Atom>,
 }

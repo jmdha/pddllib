@@ -17,11 +17,8 @@ impl<'a> Generator<'a> {
     }
 
     fn candidates(&self, state: &State, action: &'a Action) -> Vec<Vec<usize>> {
-        let mut tmp = action
-            .parameters
-            .iter()
-            .map(|_| (0..self.task.objects.len()).collect_vec())
-            .collect_vec();
+        let mut tmp: Vec<Vec<usize>> =
+            vec![(0..self.task.objects.len()).collect(); action.args];
         action
             .precondition
             .iter()

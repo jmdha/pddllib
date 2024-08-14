@@ -1,5 +1,7 @@
-use crate::task::predicate::{Predicate, PredicateKind};
+use indexmap::IndexMap;
+
 use super::error::{Error, Field, Result};
+use crate::task::predicate::{Predicate, PredicateKind};
 
 pub fn translate(predicates: &Vec<pddlp::domain::Predicate>) -> Vec<Predicate> {
     predicates
@@ -19,4 +21,14 @@ pub fn try_translate(
             .as_ref()
             .ok_or(Error::MissingField(Field::Predicates))?,
     ))
+}
+
+pub fn from_types(types: &IndexMap<String, Option<usize>>) -> Vec<Predicate> {
+    types
+        .iter()
+        .map(|(name, _)| Predicate {
+            name: name.to_owned(),
+            kind: PredicateKind::Type,
+        })
+        .collect()
 }

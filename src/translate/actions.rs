@@ -2,7 +2,10 @@ use indexmap::IndexMap;
 use pddlp::domain::Expression;
 
 use crate::task::{
-    action::{Action, Atom, AtomKind::Fact},
+    action::{
+        Action, Atom,
+        AtomKind::{self, Fact},
+    },
     parameter::Parameter,
     predicate::Predicate,
 };
@@ -30,15 +33,32 @@ pub fn translate_action(
         Some(parameters) => parameters::translate(types, &parameters),
         None => vec![],
     };
-    let precondition = match &action.precondition {
+    let mut precondition = match &action.precondition {
         Some(e) => translate_expression(predicates, &parameters, &e),
         None => vec![],
     };
+    precondition.append(
+        &mut parameters
+            .iter()
+            .enumerate()
+            .filter_map(|(p_i, param)| match param.type_index {
+                Some(i) => Some(Atom {
+                    predicate: predicates
+                        .iter()
+                        .position(|p| &p.name == types.get_index(i).unwrap().0)
+                        .expect("Internal error. Should be impossible."),
+                    kind: AtomKind::Fact,
+                    args: vec![p_i],
+                    value: true,
+                }),
+                None => None,
+            })
+            .collect(),
+    );
     let effect = translate_expression(predicates, &parameters, &action.effect);
-
     Action {
         name,
-        parameters,
+        args: parameters.len(),
         precondition,
         effect,
     }
