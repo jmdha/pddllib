@@ -25,3 +25,14 @@ fn gripper() {
     let operators = generator.instantiate_all(&task.init);
     assert_eq!(18, operators.len());
 }
+
+#[test]
+fn miconic() {
+    let data = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data");
+    let domain = data.join("miconic").join("domain.pddl");
+    let problem = data.join("miconic").join("problem.pddl");
+    let task = translate_from_file(&domain, &problem).unwrap();
+    let generator = Generator::init(&task);
+    let operators = generator.instantiate_all(&task.init);
+    assert_eq!(4, operators.len());
+}
