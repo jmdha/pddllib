@@ -3,7 +3,7 @@ use itertools::Itertools;
 use super::Generator;
 use crate::{
     operator::Operator,
-    state::State,
+    state::{Fact, State},
     task::action::{Action, AtomKind},
 };
 
@@ -24,8 +24,11 @@ impl<'a> Generator<'a> {
             .iter()
             .filter(|a| a.args.len() == 1)
             .for_each(|a| {
-                tmp[a.args[0]]
-                    .retain(|o| state.has_unary(a.predicate, o) == a.value)
+                tmp[a.args[0]].retain(|o| {
+                    let fact = Fact::new(a.predicate, vec![*o]);
+                    self.task.statics.contains(&fact)
+                        || state.has_unary(a.predicate, o) == a.value
+                })
             });
         tmp
     }
@@ -45,7 +48,9 @@ impl<'a> Generator<'a> {
                         let args = a.map_args(args);
                         match a.kind {
                             AtomKind::Fact => {
-                                state.has_nary(a.predicate, &args)
+                                let fact = Fact::new(a.predicate, args);
+                                self.task.statics.contains(&fact)
+                                    || state.has_fact(&fact)
                             }
                             AtomKind::Equal => args.iter().all_equal(),
                         }
