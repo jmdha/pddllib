@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use super::error::{Error, Field, Result};
 use crate::{
     state::Fact,
@@ -9,7 +10,7 @@ pub fn translate(
     predicates: &Vec<Predicate>,
     objects: &IndexSet<String>,
     facts: &Vec<pddlp::problem::Fact>,
-) -> Result<Vec<Fact>> {
+) -> Result<BTreeSet<Fact>> {
     Ok(facts
         .iter()
         .map(|fact| {
@@ -32,14 +33,14 @@ pub fn translate(
                     .collect::<Result<Vec<usize>>>()?,
             ))
         })
-        .collect::<Result<Vec<Fact>>>()?)
+        .collect::<Result<BTreeSet<Fact>>>()?)
 }
 
 pub fn try_translate(
     predicates: &Vec<Predicate>,
     objects: &IndexSet<String>,
     facts: &Option<Vec<pddlp::problem::Fact>>,
-) -> Result<Vec<Fact>> {
+) -> Result<BTreeSet<Fact>> {
     translate(
         predicates,
         objects,
@@ -64,7 +65,7 @@ fn from_object_type(
 pub fn from_object_types(
     predicates: &Vec<Predicate>,
     objects: &Option<Vec<pddlp::problem::Object>>,
-) -> Vec<Fact> {
+) -> BTreeSet<Fact> {
     match objects {
         Some(objects) => objects
             .iter()
@@ -72,6 +73,6 @@ pub fn from_object_types(
             .filter(|(_, object)| object.type_name.is_some())
             .map(|(i, o)| from_object_type(predicates, i, o.type_name.unwrap()))
             .collect(),
-        None => vec![],
+        None => BTreeSet::default(),
     }
 }

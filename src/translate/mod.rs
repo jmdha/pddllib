@@ -4,6 +4,7 @@ mod goal;
 mod init;
 mod parameters;
 mod predicates;
+mod statics;
 mod types;
 
 use crate::task::Task;
@@ -42,7 +43,9 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .collect();
     let actions = actions::translate(&types, &predicates, &domain.actions);
     let mut init = init::try_translate(&predicates, &objects, &problem.init)?;
-    init.append(&mut init::from_object_types(&predicates, &problem.objects));
+    init.extend(init::from_object_types(&predicates, &problem.objects));
+    let static_predicates = statics::find(&actions, &predicates);
+    let (statics, init) = statics::split(&static_predicates, init);
     let goal = goal::try_translate(&predicates, &objects, &problem.goal)?;
     Ok(Task {
         domain_name,
@@ -50,6 +53,8 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         predicates,
         actions,
         objects,
+        static_predicates,
+        statics,
         init,
         goal,
     })

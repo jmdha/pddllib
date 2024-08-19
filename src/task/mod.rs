@@ -2,8 +2,8 @@ pub mod action;
 pub mod parameter;
 pub mod predicate;
 
+use std::collections::BTreeSet;
 use indexmap::IndexSet;
-
 use self::{
     action::Action, predicate::Predicate
 };
@@ -12,15 +12,17 @@ use crate::{
 };
 
 pub type Plan<'a> = Vec<Operator<'a>>;
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct Task {
     pub domain_name: Option<String>,
     pub problem_name: Option<String>,
     pub predicates: Vec<Predicate>,
     pub actions: Vec<Action>,
     pub objects: IndexSet<String>,
-    pub init: Vec<Fact>,
-    pub goal: Vec<(Fact, bool)>,
+    pub static_predicates: BTreeSet<usize>,
+    pub statics: BTreeSet<Fact>,
+    pub init: BTreeSet<Fact>,
+    pub goal: BTreeSet<(Fact, bool)>,
 }
 
 impl<'a> Task {

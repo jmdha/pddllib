@@ -41,10 +41,8 @@ pub struct State {
 }
 
 impl State {
-    pub fn new(facts: Vec<Fact>) -> Self {
-        State {
-            facts: facts.into_iter().collect(),
-        }
+    pub fn new(facts: BTreeSet<Fact>) -> Self {
+        State { facts }
     }
     #[inline(always)]
     pub fn fact_count(&self) -> usize {
@@ -55,19 +53,11 @@ impl State {
         self.has_fact(&Fact::new(predicate, vec![]))
     }
     #[inline(always)]
-    pub fn has_unary(
-        &self,
-        predicate: usize,
-        arg: &usize,
-    ) -> bool {
+    pub fn has_unary(&self, predicate: usize, arg: &usize) -> bool {
         self.has_fact(&Fact::new(predicate, vec![*arg]))
     }
     #[inline(always)]
-    pub fn has_nary(
-        &self,
-        predicate: usize,
-        args: &Vec<usize>,
-    ) -> bool {
+    pub fn has_nary(&self, predicate: usize, args: &Vec<usize>) -> bool {
         self.has_fact(&Fact::new(predicate, args.to_owned()))
     }
     #[inline(always)]
@@ -90,7 +80,7 @@ impl State {
         }
         state
     }
-    pub fn covers(&self, goal: &Vec<(Fact, bool)>) -> bool {
+    pub fn covers(&self, goal: &BTreeSet<(Fact, bool)>) -> bool {
         goal.iter().all(|(f, v)| self.has_fact(f) == *v)
     }
 }
