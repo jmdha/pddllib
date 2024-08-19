@@ -1,5 +1,4 @@
 pub mod action;
-pub mod object;
 pub mod parameter;
 pub mod predicate;
 

@@ -6,10 +6,7 @@ mod parameters;
 mod predicates;
 mod types;
 
-use crate::{
-    state::{Fact, State},
-    task::{predicate::PredicateKind, Task},
-};
+use crate::task::Task;
 use error::{Error, Field, Result};
 use indexmap::IndexSet;
 use pddlp::{domain::Domain, problem::Problem};
@@ -45,25 +42,7 @@ pub fn translate_parsed(domain: &Domain, problem: &Problem) -> Result<Task> {
         .collect();
     let actions = actions::translate(&types, &predicates, &domain.actions);
     let mut init = init::try_translate(&predicates, &objects, &problem.init)?;
-    if let Some(objs) = &problem.objects {
-        init.append(
-            &mut objs
-                .iter()
-                .filter_map(|object| match object.type_name {
-                    Some(t) => Some(Fact::new(
-                        predicates
-                            .iter()
-                            .position(|p| {
-                                t == p.name && p.kind == PredicateKind::Type
-                            })
-                            .unwrap(),
-                        vec![objects.get_index_of(object.name).unwrap()],
-                    )),
-                    None => None,
-                })
-                .collect(),
-        );
-    }
+    init.append(&mut init::from_object_types(&predicates, &problem.objects));
     let goal = goal::try_translate(&predicates, &objects, &problem.goal)?;
     Ok(Task {
         domain_name,
