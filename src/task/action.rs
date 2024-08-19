@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Action {
     pub name: String,
     pub args: usize,
@@ -6,7 +6,7 @@ pub struct Action {
     pub effect: Vec<Atom>,
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Atom {
     pub predicate: usize,
     pub kind: AtomKind,
@@ -14,7 +14,7 @@ pub struct Atom {
     pub value: bool,
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AtomKind {
     Fact,
     Equal,
