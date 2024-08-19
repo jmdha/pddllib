@@ -17,18 +17,15 @@ impl<'a> Generator<'a> {
     }
 
     fn candidates(&self, state: &State, action: &'a Action) -> Vec<Vec<usize>> {
-        let mut tmp: Vec<Vec<usize>> =
-            vec![(0..self.task.objects.len()).collect(); action.args];
+        let mut tmp: Vec<Vec<usize>> = self.candidates[action].to_owned();
         action
             .precondition
             .iter()
             .filter(|a| a.args.len() == 1)
+            .filter(|a| !self.task.static_predicates.contains(&a.predicate))
             .for_each(|a| {
-                tmp[a.args[0]].retain(|o| {
-                    let fact = Fact::new(a.predicate, vec![*o]);
-                    self.task.statics.contains(&fact)
-                        || state.has_unary(a.predicate, o) == a.value
-                })
+                tmp[a.args[0]]
+                    .retain(|o| state.has_unary(a.predicate, o) == a.value)
             });
         tmp
     }
